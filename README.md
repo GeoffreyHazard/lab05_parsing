@@ -10,7 +10,9 @@ In order to visualize a compelling 3-dimensional scene, we need to manage tons o
 
 To solve this, we can define groupings of geometry that compose our scene, which can themselves be made up of sub-groupings, etc, until we get to the primitives. Since such groupings can be nested, our representation of objects in a scene will form a directed acyclic graph, which we will call scene graph.
 
-Probably include some handwritten tasks like last year, but will we set up a check-off session for the parser lab since we are planning on setting up ‘auto-grader’ for this lab?
+```
+Probably include some handwritten tasks as check off questions like last year?
+```
 
 
 ## 3 Implementing the Scene Loader
