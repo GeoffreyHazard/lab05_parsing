@@ -2,42 +2,41 @@
 
 ## 1. Introduction
 
-In this lab, you will learn how scene graphs work and how to load them, so that every object has the correct size and position in the scene. You will need the code you’ve written in this lab for the upcoming assignments!
+In this lab, you will learn how to work with **scene files** to load all the information you need to render a 3d scene. In particular, you will learn how to read **transformation graphs** so that every object has the correct size and position in the scene. You will need the code you’ve written in this lab for the upcoming assignments!
 
 ## 2. Problem Statement
 
-To visualize a compelling 3-dimensional scene, we need to manage tons of complex geometries that represent objects, people, or just about anything else. These geometries have many different transformations applied to them (like scaling, rotation or translation). We need a good way of handling all of this information.
+To visualize a compelling 3d scene, we need data about the camera, lights, textures, surfaces and geometry. The final placement of the geometry (representing objects, people, or just about anything else) can be particularly overwhelming, because we need to manage many different transformations like scaling, rotation or translation. Often, many (but not all) of the same transformations are applied to many objects in the scene. We need a good data structure to manage this!
 
 <details>
-  <summary>Example of a cityscape!</summary>
-If our scene is a city, it would be senseless to describe the position of all the windows by their distance from the center of the city. It would be much more sensible to describe each window's position relative to the building it is part of, and describe the building's position relative to its neighborhood, and finally the neighborhood's position relative to the center of the city.
+  <summary>Example of a cityscape</summary>
+If our scene is a city, it would be senseless to describe the positions of all the windows by their distance from the center of the city. It would be much more sensible to describe each window's position relative to the building it is part of, and describe the building's position relative to its neighborhood, and finally the neighborhood's position relative to the center of the city.
 
 </details>
 
-## 3. Understanding Scene Graphs
+## 3. Understanding Transfromation Graphs
 
-To handle the objects and their transformations, we can define nested groupings of geometry that compose our scene. 
+To handle the objects and their transformations, we can define nested groupings of geometry that compose our scene. This is particularly helpful for managing the transformaton matricies of objects in a compact way.
 
 <details>
   <summary>Example of a cityscape continued</summary>
 In our city, we can define a first grouping as the neighborhoods, which can themselves be made up of sub-groupings consisting of buildings, which can be made of further sub-groupings of windows, doors and roofs, until we get to the primitives like cubes, pyramids, and cylinders. 
 </details>
-We can represent the objects in a scene and their transformations as a directed acyclic graph, which we will call a scene graph.
 
-
+We can represent the objects in a scene and their transformations as a directed acyclic graph, which we will call a scene graph or **transformation graphs**.
  
 ![Scene Graph Image](img/0002.png)
 
 The above scene graph has 5 primitives. Transformation matrices, (named as M1, M2, and so on), describe the transformations applied to the children nodes. These matrices can produce a series of transformations (say M1 includes a rotation and a scaling). The leaf nodes contain primitive shapes.
 
 
-**Task 1. Get the Final Transformation Matrices**
+**Task 1. Building the Transformation Matrices**
 
 For each primitive object, write down its final transformation matrix in terms of a product of matrices M1, M2, M3, etc., as needed.
 
-**Task 2. Navigate the Scene Graph Efficiently**
+**Task 2. Navigating the Scene Graph Efficiently**
 
-In the previous exercise, you might have noticed that some matrix multiplications repeat throughout different objects. Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. Explain how your approach is better in terms of time complexity, and write pseudocode for it.
+In the previous exercise, you might have seen how some matrix multiplications repeat throughout different objects. Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. Explain how your approach is better in terms of time complexity, and write pseudocode for it.
 
 
 ## 4. Implementing a Scene Parser
