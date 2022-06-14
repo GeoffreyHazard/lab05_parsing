@@ -25,9 +25,9 @@ In our city, we can define a first grouping as the neighborhoods, which can them
 
 We can represent the objects in a scene and their transformations as a directed acyclic graph, which we will call a scene graph or **transformation graphs**.
  
-![Scene Graph Image](img/0002.png)
+![Scene Graph Image](Parsing_Lab_City_Graph.jpg)
 
-The above scene graph has 5 primitives. Transformation matrices, (named as M1, M2, and so on), describe the transformations applied to the children nodes. These matrices can produce a series of transformations (say M1 includes a rotation and a scaling). The leaf nodes contain primitive shapes.
+The above scene graph has 8 primitives, all of which are cubes. The letters T, R and S describe transformations applied to the children nodes. You will need to multiply the corresponding matricies (see last week's the transforms lab), to produce a final transformation matrix that will put each primitive where it needs to be in the scene. Remember, from the transfroms lab, that the order of matrix multiplication matters.
 
 
 **Task 1. Building the Transformation Matrices**
