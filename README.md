@@ -30,6 +30,9 @@ The graph below represents a simplified version of our city example. The nodes s
 We have devided our model into two districts (Willow Street and Main Street). Each of these districts has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
 </details>
 
+**Task 1. a. Order of Multiplication**
+Write the cumulative matrix for the leaf nodes in terms of matricies M1, M2, etc.
+
 **Add a simplfied matrix**
 Questions with just one matrix per branch; then build up to example.
 
@@ -51,34 +54,39 @@ For cubes 1, 3 and 8, write the final transformation matrix in terms of a produc
 **Task 2. Navigating the Scene Graph Efficiently**
 
 In the previous exercise, you might have seen how some matrix multiplications repeat throughout different objects.
-Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. 
+Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. **Mention depth first search here**
 Explain how your approach is better in terms of time complexity, and write pseudocode for it.
-
-<details>
-  <summary>The scene file .xml format</summary>
-Describe in detail <object>, <transblock> etc
-</details>
 
 
 ## 4. Implementing a Scene Parser
 
+In this section you will be filling in CS123SceneMetaData struct using depth first search. It has everything you need in this lab
+You may have noticed that omatadata has an &, explain references here.
+**Dropdown on references**
 Now, you are ready to implement the static `CS123SceneLoader::load` method in the provided stencil.
 
-### 4.1. Understanding the CSCI1230-specific Format
+### 4.1. Understanding the Header Files in SceneData.h
+**In detail**
 
 Throughout this course, we will use a CSCI1230-specific scene file format to describe a scene. Our scene file contains necessary information of a scene, namely global data, camera data, light data, and object data. You should refer to this document to understand scene files and scene graphs in detail.
 
 ### 4.2. Implementing CS123SceneLoader::load()
   **Explain the sencil structure, what files do the parsing, what functions to fill in.**
+  Behind the scenes, we have parsed out all this data nicely and you can find it in SceneData.h
   
 ### 4.2.1 Global data Camera Data
+  In load(), you will need 
   These are found in the parser member variables.
   
 ### 4.2.2 Lights
   Array of structs
 
-### 4.2.3 Depth-first search through root
-#### 4.2.4 Depth-first but without matrix multiplication 
+### 4.2.3 Read the matrix of the root
+  Call fsParseSceneNode() in load().
+  Check that you are correctly printing out the transformation matrix. **Print out the matrix & provide it so they can check**
+  In order to make a matrix from a vec::3, you will need to call GLM::rotate, translate, scale. For rotate in particular, look at SceneData.h angle, and rotate.
+  
+### 4.2.3 Depth-first search recusively 
   
 Whenever we would like to load a scene, we can call `CS123SceneLoader::load`. Since this is a class method, there is no need to create any new `CS123SceneLoader` instance. 
 
@@ -87,9 +95,21 @@ The stencil code already covers the parsing for the XML scene file and what you 
 In `CS123SceneLoader::load`, you should obtain the global data for the scene, the camera data and the lighting. You should also traverse through the primitive tree and calculate the cumulative transformation matrix for each of them. All data described above can be packed into a `CS123SceneMetaData` structure as a unified interface for you to create your own scene for your future assignments.
 
 ### 4.3 Testing scenes
-  Be prepared to load the things in increasing complexing
-## 5. (Optional) Creating your own 3-d scenes
+  You should have a completed parser that can load all of the scene files. Be prepared to load the things in increasing complexing.
+  You can run
+  It will print to console but also show you a visual
+  
+  
+### 5. Checkoff
+Have answers to conceptual questions ready.
+Print out the correct matrices and show a visual of the scene.
+  
+## 6. (Optional) Creating your own 3-d scenes
 
-You can use what you have learned in this lab to create your own 3-d scenes by writing custom scene files! Refer to the .xml files attached with this lab to get started. You can begin by looking at 
+This could also be a good start for a final project.
+Description of the .xml format
+  
+Build a scene with a camera & single light, then expand.
+You can use what you have learned in this lab to create your own 3-d scenes by writing custom scene files! Refer to the .xml files attached with this lab to get started. 
 
 ### 5.1.
