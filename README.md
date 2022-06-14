@@ -30,6 +30,8 @@ The graph below represents a simplified version of our city example. The nodes s
 We have devided our model into two districts (Willow Street and Main Street). Each of these districts has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
 </details>
 
+**Add a simplfied matrix**
+Questions with just one matrix per branch; then build up to example.
 
 The letters T, R and S describe transformations applied to the children nodes.
  
@@ -52,6 +54,11 @@ In the previous exercise, you might have seen how some matrix multiplications re
 Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. 
 Explain how your approach is better in terms of time complexity, and write pseudocode for it.
 
+<details>
+  <summary>The scene file .xml format</summary>
+Describe in detail <object>, <transblock> etc
+</details>
+
 
 ## 4. Implementing a Scene Parser
 
@@ -69,7 +76,10 @@ The stencil code already covers the parsing for the XML scene file and what you 
 
 In `CS123SceneLoader::load`, you should obtain the global data for the scene, the camera data and the lighting. You should also traverse through the primitive tree and calculate the cumulative transformation matrix for each of them. All data described above can be packed into a `CS123SceneMetaData` structure as a unified interface for you to create your own scene for your future assignments.
 
+### 4.3 Testing scenes
+  Be prepared to load the things in increasing complexing
 ## 5. (Optional) Creating your own 3-d scenes
+
 You can use what you have learned in this lab to create your own 3-d scenes by writing custom scene files! Refer to the .xml files attached with this lab to get started. You can begin by looking at 
 
 ### 5.1.
