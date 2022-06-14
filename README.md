@@ -24,19 +24,33 @@ In our city, we can define a first grouping as the neighborhoods, which can them
 </details>
 
 We can represent the objects in a scene and their transformations as a directed acyclic graph, which we will call a scene graph or **transformation graphs**.
+The graph below represents a simplified version of our city example. The nodes separate objects that have different transformations applied to them. On the branches, we showed the exact transformations to be appled to all of the geometry downstream. These are written in the form S, T or R along with the  Only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc).
+<details>
+  <summary>How does the graph represent a model of a city?</summary>
+We have devided our model into two districts (Willow Street and Main Street). Each of these districts has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
+</details>
+
+
+The letters T, R and S describe transformations applied to the children nodes.
  
-![Scene Graph Image](Parsing_Lab_City_Graph.jpg)
-
-The above scene graph has 8 primitives, all of which are cubes. The letters T, R and S describe transformations applied to the children nodes. You will need to multiply the corresponding matricies (see last week's the transforms lab), to produce a final transformation matrix that will put each primitive where it needs to be in the scene. Remember, from the transfroms lab, that the order of matrix multiplication matters.
+![Scene Graph Image](img/Parsing_Lab_City_Graph_v3.jpg)
 
 
-**Task 1. Building the Transformation Matrices**
+Remember how in the transforms lab you learned how to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In order to transform each primitive to its final place, you will need one of these transformation matrices for each of the primitives in your scene.
+Keep in mind that order matters when multiplying matricies!
 
-For each primitive object, write down its final transformation matrix in terms of a product of matrices M1, M2, M3, etc., as needed.
+
+**Task 1. a. Order of Multiplication**
+For the Cube 2, write down the order in which the three matricies should be applied. You can write each matrix in the form S(0, 6, .1)
+
+**Task 1. b. Building the Final Transformation Matrices**
+For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices T, R, S, etc., as needed. You can use the same notation as 1. a.
 
 **Task 2. Navigating the Scene Graph Efficiently**
 
-In the previous exercise, you might have seen how some matrix multiplications repeat throughout different objects. Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. Explain how your approach is better in terms of time complexity, and write pseudocode for it.
+In the previous exercise, you might have seen how some matrix multiplications repeat throughout different objects.
+Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. 
+Explain how your approach is better in terms of time complexity, and write pseudocode for it.
 
 
 ## 4. Implementing a Scene Parser
@@ -54,3 +68,8 @@ Whenever we would like to load a scene, we can call `CS123SceneLoader::load`. Si
 The stencil code already covers the parsing for the XML scene file and what you should do is to create the scene meta-data based on the information inside the parser. In the load function, a new parser instance will be created and try to parse the given file. Upon success, all information will be available via the `CS123ISceneParser` interface.
 
 In `CS123SceneLoader::load`, you should obtain the global data for the scene, the camera data and the lighting. You should also traverse through the primitive tree and calculate the cumulative transformation matrix for each of them. All data described above can be packed into a `CS123SceneMetaData` structure as a unified interface for you to create your own scene for your future assignments.
+
+## 5. (Optional) Creating your own 3-d scenes
+You can use what you have learned in this lab to create your own 3-d scenes by writing custom scene files! Refer to the .xml files attached with this lab to get started. You can begin by looking at 
+
+### 5.1.
