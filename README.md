@@ -69,7 +69,17 @@ Now, you are ready to implement the static `CS123SceneLoader::load` method in th
 Throughout this course, we will use a CSCI1230-specific scene file format to describe a scene. Our scene file contains necessary information of a scene, namely global data, camera data, light data, and object data. You should refer to this document to understand scene files and scene graphs in detail.
 
 ### 4.2. Implementing CS123SceneLoader::load()
+  **Explain the sencil structure, what files do the parsing, what functions to fill in.**
+  
+### 4.2.1 Global data Camera Data
+  These are found in the parser member variables.
+  
+### 4.2.2 Lights
+  Array of structs
 
+### 4.2.3 Depth-first search through root
+#### 4.2.4 Depth-first but without matrix multiplication 
+  
 Whenever we would like to load a scene, we can call `CS123SceneLoader::load`. Since this is a class method, there is no need to create any new `CS123SceneLoader` instance. 
 
 The stencil code already covers the parsing for the XML scene file and what you should do is to create the scene meta-data based on the information inside the parser. In the load function, a new parser instance will be created and try to parse the given file. Upon success, all information will be available via the `CS123ISceneParser` interface.
