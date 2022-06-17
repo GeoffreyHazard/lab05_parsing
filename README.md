@@ -24,37 +24,41 @@ In our city, we can define a first grouping as the neighborhoods, which can them
 </details>
 
 We can represent the objects in a scene and their transformations as a directed acyclic graph, which we will call a scene graph or **transformation graphs**.
-The graph below represents a simplified version of our city example. The nodes separate objects that have different transformations applied to them. On the branches, we showed the exact transformations to be appled to all of the geometry downstream. These are written in the form S, T or R along with the  Only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc).
+
+Consider the graph below that represents four primitives in a scene (two spheres, one cube, one cone and a cylinder found on the leaf nodes). Transformation matrices (denoted M1, M2, etc.) are represented on the branches of the graph. All nodes that are not leaf nodes are also called **transblocks** and can be thought of as groupings of objects as mentioned above.
+
+![Scene Graph Image](img/Parsing_Lab_Simple_Graph.jpg)
+
+
+**Task 1. a. Order of Multiplication**
+Write the cumulative matrix for each of the primitives (leaf nodes) in terms of matricies M1, M2, etc. Your answer should be a product of matricies.
+
+
+Now consider the graph below, which represents a simplified version of our city example. The nodes separate objects that have different transformations applied to them. On the branches, we showed the exact transformations to be appled to all of the geometry downstream. These are written in the form S, T or R along with the  Only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc).
 <details>
   <summary>How does the graph represent a model of a city?</summary>
 We have devided our model into two districts (Willow Street and Main Street). Each of these districts has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
 </details>
 
-**Task 1. a. Order of Multiplication**
-Write the cumulative matrix for the leaf nodes in terms of matricies M1, M2, etc.
-
-**Add a simplfied matrix**
-Questions with just one matrix per branch; then build up to example.
-
 The letters T, R and S describe transformations applied to the children nodes.
  
-![Scene Graph Image](img/Parsing_Lab_City_Graph_v3.jpg)
+![Scene Graph Image](img/Parsing_Lab_City_Graph_v4.jpg)
 
 
 Remember how in the transforms lab you learned how to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In order to transform each primitive to its final place, you will need one of these transformation matrices for each of the primitives in your scene.
 Keep in mind that order matters when multiplying matricies!
 
 
-**Task 1. a. Order of Multiplication**
+**Task 2. a. Order of Multiplication of Individual Transformations**
 For the Cube 2, write down the order in which the three matricies should be applied. You can write each matrix in the form S(0, 6, .1)
 
-**Task 1. b. Building the Final Transformation Matrices**
+**Task 2. b. Building the Final Transformation Matrices**
 For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices T, R, S, etc., as needed. You can use the same notation as 1. a.
 
-**Task 2. Navigating the Scene Graph Efficiently**
+**Task 3. Navigating the Scene Graph Efficiently**
 
 In the previous exercise, you might have seen how some matrix multiplications repeat throughout different objects.
-Explain why traversing a scene graph from the root node every time each object is rendered is inefficient and propose a more efficient approach. **Mention depth first search here**
+Explain why traversing a scene graph from the root node every time each object is rendered is inefficient. Now consider how you might build the final transformation matricies using Depth First Search.
 Explain how your approach is better in terms of time complexity, and write pseudocode for it.
 
 
@@ -101,15 +105,11 @@ In `CS123SceneLoader::load`, you should obtain the global data for the scene, th
   
   
 ### 5. Checkoff
-Have answers to conceptual questions ready.
-Print out the correct matrices and show a visual of the scene.
+To be checked off, you shoudl have your answers to conceptual questions ready (Tasks 1 through 3).
+You should also be able to print out the correct matrices and show a visual of the scene.
   
 ## 6. (Optional) Creating your own 3-d scenes
 
-This could also be a good start for a final project.
+You might want to work with the scene files directly for a final project, in order to create your own 3-d scenes. You can use this lab as a starting point and reference on how to do that. Below we will describe how the .xml format works, so you can understand how all the data mentioned above is actually written in the scene files.
 Description of the .xml format
   
-Build a scene with a camera & single light, then expand.
-You can use what you have learned in this lab to create your own 3-d scenes by writing custom scene files! Refer to the .xml files attached with this lab to get started. 
-
-### 5.1.
