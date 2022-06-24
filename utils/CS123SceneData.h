@@ -12,40 +12,9 @@
 
 #include "glm/glm.hpp"
 
+//2.1. Lights
 enum class LightType {
     LIGHT_POINT, LIGHT_DIRECTIONAL, LIGHT_SPOT, LIGHT_AREA
-};
-
-enum class PrimitiveType {
-    PRIMITIVE_CUBE,
-    PRIMITIVE_CONE,
-    PRIMITIVE_CYLINDER,
-    PRIMITIVE_TORUS,
-    PRIMITIVE_SPHERE,
-    PRIMITIVE_MESH
-};
-
-// Enumeration for types of transformations that can be applied to objects, lights, and cameras.
-enum TransformationType {
-   TRANSFORMATION_TRANSLATE, TRANSFORMATION_SCALE, TRANSFORMATION_ROTATE, TRANSFORMATION_MATRIX
-};
-
-template <typename Enumeration>
-auto as_integer(Enumeration const value)
-    -> typename std::underlying_type< Enumeration >::type
-{
-    return static_cast<typename std::underlying_type<Enumeration>::type>(value);
-}
-
-// Struct to store a RGBA color in floats [0,1]
-using CS123SceneColor = glm::vec4;
-
-// Scene global color coefficients
-struct CS123SceneGlobalData  {
-   float ka;  // global ambient coefficient
-   float kd;  // global diffuse coefficient
-   float ks;  // global specular coefficient
-   float kt;  // global transparency coefficient
 };
 
 // Data for a single light
@@ -66,7 +35,8 @@ struct CS123SceneLightData {
    float width, height; // Only applicable to area lights
 };
 
-// Data for scene camera
+
+// 2.2. Camera
 struct CS123SceneCameraData {
    glm::vec4 pos;
    glm::vec4 look;
@@ -77,6 +47,77 @@ struct CS123SceneCameraData {
 
    float aperture;      // Only applicable for depth of field
    float focalLength;   // Only applicable for depth of field
+};
+
+
+// 2.3. Primitives
+enum class PrimitiveType {
+    PRIMITIVE_CUBE,
+    PRIMITIVE_CONE,
+    PRIMITIVE_CYLINDER,
+    PRIMITIVE_TORUS,
+    PRIMITIVE_SPHERE,
+    PRIMITIVE_MESH
+};
+
+struct CS123ScenePrimitive {
+   PrimitiveType type;
+   std::string meshfile;     // Only applicable to meshes
+   CS123SceneMaterial material;
+};
+
+
+
+// 2.4. Transformation Graphs
+
+// Enumeration for types of transformations that can be applied to objects, lights, and cameras.
+enum TransformationType {
+   TRANSFORMATION_TRANSLATE, TRANSFORMATION_SCALE, TRANSFORMATION_ROTATE, TRANSFORMATION_MATRIX
+};
+
+// Data for transforming a scene object. Aside from the TransformationType, the remaining of the
+// data in the struct is mutually exclusive.
+struct CS123SceneTransformation {
+    TransformationType type;
+
+    glm::vec3 translate; // The translation vector. Only valid if transformation is a translation.
+    glm::vec3 scale;     // The scale vector. Only valid if transformation is a scale.
+    glm::vec3 rotate;    // The axis of rotation. Only valid if the transformation is a rotation.
+    float angle;         // The rotation angle in RADIANS. Only valid if transformation is a
+                         // rotation.
+
+    glm::mat4x4 matrix;  // The matrix for the transformation. Only valid if the transformation is
+                         // a custom matrix.
+};
+
+// Structure for non-primitive scene objects
+struct CS123SceneNode {
+   std::vector<CS123SceneTransformation*> transformations;
+
+   std::vector<CS123ScenePrimitive*> primitives;
+
+   std::vector<CS123SceneNode*> children;
+};
+
+
+
+
+template <typename Enumeration>
+auto as_integer(Enumeration const value)
+    -> typename std::underlying_type< Enumeration >::type
+{
+    return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+}
+
+// Struct to store a RGBA color in floats [0,1]
+using CS123SceneColor = glm::vec4;
+
+// Scene global color coefficients
+struct CS123SceneGlobalData  {
+   float ka;  // global ambient coefficient
+   float kd;  // global diffuse coefficient
+   float ks;  // global specular coefficient
+   float kt;  // global transparency coefficient
 };
 
 // Data for file maps (ie: texture maps)
@@ -131,36 +172,6 @@ struct CS123SceneMaterial {
        shininess = 0.0f;
        ior = 0.0;
    }
-};
-
-struct CS123ScenePrimitive {
-   PrimitiveType type;
-   std::string meshfile;     // Only applicable to meshes
-   CS123SceneMaterial material;
-};
-
-// Data for transforming a scene object. Aside from the TransformationType, the remaining of the
-// data in the struct is mutually exclusive.
-struct CS123SceneTransformation {
-    TransformationType type;
-
-    glm::vec3 translate; // The translation vector. Only valid if transformation is a translation.
-    glm::vec3 scale;     // The scale vector. Only valid if transformation is a scale.
-    glm::vec3 rotate;    // The axis of rotation. Only valid if the transformation is a rotation.
-    float angle;         // The rotation angle in RADIANS. Only valid if transformation is a
-                         // rotation.
-
-    glm::mat4x4 matrix;  // The matrix for the transformation. Only valid if the transformation is
-                         // a custom matrix.
-};
-
-// Structure for non-primitive scene objects
-struct CS123SceneNode {
-   std::vector<CS123SceneTransformation*> transformations;
-
-   std::vector<CS123ScenePrimitive*> primitives;
-
-   std::vector<CS123SceneNode*> children;
 };
 
 #endif
