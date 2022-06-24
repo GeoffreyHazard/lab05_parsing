@@ -6,22 +6,102 @@ In this lab, you will learn how to work with **scene files** to load all the inf
 
 ## 2. Understanding Scene Files
 
-To visualize a compelling 3d scene, we need data about the lights, camera, textures, surfaces and geometry. This section will go over the conceptual aspects of how these are represented.
+To visualize a compelling 3d scene, we need data about the lights, camera, textures, surfaces and geometry. 
+Take a look at ```utils/CS123SceneData.h```. In this file, you will find all the data structures you need to build a scene. This section will go over the conceptual aspects of the scene elements.
 
 ### 2.1. Lights
+First, look at ```lines 15 - 36``` in ```CS123SceneData.h```:
+
+```cpp
+enum class LightType {
+    LIGHT_POINT, LIGHT_DIRECTIONAL, LIGHT_SPOT, LIGHT_AREA
+};
+```
+
+Lights in the scene are of four possible different types: Point, Directional, Spot, and Area.
+
+```cpp
+struct CS123SceneLightData {
+   int id;
+   LightType type;
+
+   CS123SceneColor color;
+   glm::vec3 function;  // Attenuation function
+
+   glm::vec4 pos;       // Not applicable to directional lights
+   glm::vec4 dir;       // Not applicable to point lights
+
+   float radius;        // Only applicable to spot lights
+   float penumbra;      // Only applicable to spot lights
+   float angle;         // Only applicable to spot lights
+
+   float width, height; // Only applicable to area lights
+};
+```
+
+
+Each light is represented with a struct that includes what type of light it is, its color, and other relevant information.
+
+**Point lights** are an single point in space that emits light (~lightbulb). They don't need a direction vector.
+
+**Directional lights** simulate light from a source that is extremely far away (e.g. the sun). Because of this, they don't have an attenuation function.
+
+**Spot lights** emit light in a cone shape (~a flashlight). They need an angle and radius to describe the dimentions of the cone, as well as a direction and position. The penumbra is how much the light fades away along the edges of the cone.
+
+**Area lights** are squares that emit light in all directions uniformly accross their surface.
+
+_Parts taken from [this article](https://docs.unity3d.com/Manual/Lighting.html) where you can read more about types of light used in 3d scenes._
 
 ### 2.2. Camera
+Now, take a look at ```lines 40 - 50``` in ```CS123SceneData.h```:
 
-### 2.3. Geometry and Transformation Graphs
+```cpp
+struct CS123SceneCameraData {
+   glm::vec4 pos;
+   glm::vec4 look;
+   glm::vec4 up;
 
-To save memory, we will use only a small number of objects which are then repeated and modified using transformations. The final placement of the geometry (representing objects, people, or just about anything else) can be particularly overwhelming, because we need to manage many different transformations like scaling, rotation or translation. Often, many (but not all) of the same transformations are applied to many objects in the scene.
+   float heightAngle;
+   float aspectRatio;
+};
+```
+Look familiar? The camera is also just a struct with the relevant fields needed to describe its attributes! The position, look and up vectors of the camera are all described in world space (recall the discussion of world space/camera space from last week's transform's lab).
+
+### 2.3. Primitives
+On ```line 42```, we also have multiple different types of primitives:
+```cpp
+enum class PrimitiveType {
+    PRIMITIVE_CUBE,
+    PRIMITIVE_CONE,
+    PRIMITIVE_CYLINDER,
+    PRIMITIVE_TORUS,
+    PRIMITIVE_SPHERE,
+    PRIMITIVE_MESH
+};
+```
+Like the lights, the primitive types are used in a struct to describe a specific object in the scene: 
+```cpp
+struct CS123ScenePrimitive {
+   PrimitiveType type;
+   std::string meshfile;     // Only applicable to meshes
+   CS123SceneMaterial material;
+};
+```
+The meshfile is a path to an .obj or equivalent file that has a mesh's geometry. The material field describes all the important information about what the primitive looks like (its color, how shiny it is, texture, etc). You can look at the struct ```CS123SceneMaterial``` for details, but don't worry if you don't understand any of the terms if they haven't yet been covered in Lecture.
+
+Notice that unlike the lights or camera structs, there aren't any fields in ```CS123ScenePrimitive``` that describe position or orientation. This is because it is more practical to use **transformation graphs** to manage this, especially when we have a lot of primitives!
+
+### 2.4. Transformation Graphs
+
+Since all the geometry in our scene is made up of hundreds or thousands of the primitives seen just above, keeping track of the transformations for each one can be particularly inefficient. This is especially true when we notice that many (but not all) of the same transformations are applied to many primitives in the scene. When creating a scene, it also means that we would have to calculate the exact position and orientation of every primitive!
 
 <details>
   <summary>Example of a cityscape</summary>
 If our scene is a city, it would be senseless to describe the positions of all the windows by their distance from the center of the city. It would be much more sensible to describe each window's position relative to the building it is part of, and describe the building's position relative to its neighborhood, and finally the neighborhood's position relative to the center of the city.
+Since everything in our scene is made up of primitives, moving a house to a different position would be as simple as applying a transformation matrix to the house.
 </details>
 
-To handle the objects and their transformations, we can define nested groupings of geometry that compose our scene. This is particularly helpful for managing the transformation matrices of objects in a compact way.
+We can consequently define nested groupings of geometry that compose our scene. This is particularly helpful for managing the transformation matrices of objects in a compact way.
 
 <details>
   <summary>Example of a cityscape continued</summary>
