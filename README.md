@@ -222,7 +222,7 @@ In `CS123SceneLoader::load`, you should obtain the global data for the scene, th
   It will print to console but also show you a visual
   
   
-### 4. Checkoff
+## 4. Checkoff
 To be checked off, you shoudl have your answers to conceptual questions ready (Tasks 1 through 3).
 You should also be able to print out the correct matrices and show a visual of the scene.
   
