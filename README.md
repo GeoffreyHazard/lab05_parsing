@@ -135,6 +135,7 @@ Moving a house to a different position would be as simple as applying a transfor
 </details>
 
 Consequently, when creating a scene, it is helpful to work with rotation, scaling and translation matricies applied to groupings of objects. However, when rendering a scene, we will need a single transformation matrix for each primitive.
+
 Remember how in the transforms lab you learned to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In the next two subsections, you will learn how to use **transformation graphs** to build final transformation matrices for each primitive.
 
 <details>
@@ -170,15 +171,18 @@ It represents a simplified version of our city example. We have divided our mode
 </details>
 
 **Task 2. a. Order of Multiplication of Individual Transformations**
-Write a matrix ```M1``` that is all the transformations applied only to Cube 2. You matrix ```M1``` should be in the form of a product of scaling, rotation and translation matricies. You can write each transformation matrix in the form ```S(x, y, z)```.
+- Write a matrix ```M1``` that is all the transformations applied only to Cube 2. 
+
+Your matrix ```M1``` should be in the form of a product of scaling, rotation and translation matricies. You can write each transformation matrix in the form ```S(x, y, z)```.
 
 **Task 2. b. Building the Final Transformation Matrices**
-For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices ```S(x, y, z)```, ```R(x, y, z, angle)```, ```T(x, y, z)```, as needed.
+- For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices ```S(x, y, z)```, ```R(x, y, z, angle)```, ```T(x, y, z)```, as needed.
 
 **Task 3. Navigating the Scene Graph Efficiently**
 
-In the previous exercise, you might have seen how some matrix multiplications repeat throughout different objects.
-Explain why traversing a scene graph from the root node every time each object is rendered is inefficient. Now consider how you might build the final transformation matricies using depth first search.
+In the previous exercise, you should have noticed that the transformations repeat for different primitives.
+- Explain why traversing a scene graph from the root node every time each primitive is rendered is inefficient. 
+- Consider how you might build the final transformation matricies using depth first search.
 Explain how your approach is better in terms of time complexity, and write pseudocode for it.
 
 
@@ -209,7 +213,6 @@ Throughout this course, we will use a CSCI1230-specific scene file format to des
   In order to make a matrix from a vec::3, you will need to call GLM::rotate, translate, scale. For rotate in particular, look at SceneData.h angle, and rotate.
   
 ### 3.2.3 Depth-first search recusively 
-  
 Whenever we would like to load a scene, we can call `CS123SceneLoader::load`. Since this is a class method, there is no need to create any new `CS123SceneLoader` instance. 
 
 The stencil code already covers the parsing for the XML scene file and what you should do is to create the scene meta-data based on the information inside the parser. In the load function, a new parser instance will be created and try to parse the given file. Upon success, all information will be available via the `CS123ISceneParser` interface.
