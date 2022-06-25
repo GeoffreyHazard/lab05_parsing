@@ -9,8 +9,21 @@ In this lab, you will learn how to work with **scene files** to load all the inf
 To visualize a compelling 3d scene, we need data about the lights, camera, textures, surfaces and geometry. 
 Take a look at ```utils/CS123SceneData.h```. In this file, you will find all the data structures you need to build a scene. This section will go over the conceptual aspects of the scene elements.
 
-### 2.1. Lights
-First, look at ```lines 15 - 36``` in ```CS123SceneData.h```:
+### 2.1. Global Data
+First, take a look at ```lines 16 - 22``` in ```CS123SceneData.h```:
+```cpp
+struct CS123SceneGlobalData  {
+   // Scene global color coefficients
+   float ka;  // global ambient coefficient
+   float kd;  // global diffuse coefficient
+   float ks;  // global specular coefficient
+   float kt;  // global transparency coefficient
+};
+```
+This struct contains all the data relating to the entirety of the scene. In our case, it contains color coefficients that will be applied to the shading of every object in the scene. If you don't know exactly what these coefficents are, don't worry. For the purposes of this lab, you just need to know that each scene will contain global data which we will need to have when rendering it.
+
+### 2.2. Lights
+Next, look at ```lines 26 - 28``` in ```CS123SceneData.h```:
 
 ```cpp
 enum class LightType {
@@ -18,7 +31,15 @@ enum class LightType {
 };
 ```
 
-Lights in the scene are of four possible different types: Point, Directional, Spot, and Area.
+To simulate different light sources in the real world, we use four types of virtual lights: Point, Directional, Spot, and Area. 
+You will know which one of these types of lights it is by the value of the enum ```LightType```.
+
+<details>
+  <summary>What are Enums?</summary>
+Enums, or enumerated types, are user-defined data types that can take on a finite set of values. The values are defined during declaration, as shown above. Since they are enumerated, each value of the enum has an associated integer value, which by default starts with 0 for the first value. You probably have encountered enums already in Python or Java, where the convention is also to write the values in uppercase.
+</details>
+
+Now, look at ```lines 31 - 46``` in ```CS123SceneData.h```:
 
 ```cpp
 struct CS123SceneLightData {
@@ -39,8 +60,18 @@ struct CS123SceneLightData {
 };
 ```
 
+Each light in our scene is represented with a struct that includes its ```LightType```, its color, and other relevant information depending on the ```LightType ```.
 
-Each light is represented with a struct that includes what type of light it is, its color, and other relevant information.
+<details>
+  <summary>What is CS123SceneColor?</summary>
+
+```cpp
+// Struct to store a RGBA color in floats [0,1]
+using CS123SceneColor = glm::vec4;
+```
+
+You can look at lines 112 - 113 to see how color is represented. You should have already worked with with RGBA color in Brush and Filter.
+</details>
 
 **Point lights** are an single point in space that emits light (~lightbulb). They don't need a direction vector.
 
@@ -52,8 +83,8 @@ Each light is represented with a struct that includes what type of light it is, 
 
 _Parts taken from [this article](https://docs.unity3d.com/Manual/Lighting.html) where you can read more about types of light used in 3d scenes._
 
-### 2.2. Camera
-Now, take a look at ```lines 40 - 50``` in ```CS123SceneData.h```:
+### 2.3. Camera
+For the camera, take a look at ```lines 50 - 60``` in ```CS123SceneData.h```:
 
 ```cpp
 struct CS123SceneCameraData {
@@ -67,8 +98,8 @@ struct CS123SceneCameraData {
 ```
 Look familiar? The camera is also just a struct with the relevant fields needed to describe its attributes! The position, look and up vectors of the camera are all described in world space (recall the discussion of world space/camera space from last week's transform's lab).
 
-### 2.3. Primitives
-On ```line 42```, we also have multiple different types of primitives:
+### 2.4. Primitives
+Moving on to ```lines 64 - 71```, we have multiple different types of primitives:
 ```cpp
 enum class PrimitiveType {
     PRIMITIVE_CUBE,
@@ -79,7 +110,7 @@ enum class PrimitiveType {
     PRIMITIVE_MESH
 };
 ```
-Like the lights, the primitive types are used in a struct to describe a specific object in the scene: 
+Similarly to ```LightType```, we have ```PrimitiveType``` to keep track of different kinds of primitives. Again like the lights, the primitive types are used in a struct to describe a specific primitive in the scene: 
 ```cpp
 struct CS123ScenePrimitive {
    PrimitiveType type;
@@ -87,66 +118,62 @@ struct CS123ScenePrimitive {
    CS123SceneMaterial material;
 };
 ```
-The meshfile is a path to an .obj or equivalent file that has a mesh's geometry. The material field describes all the important information about what the primitive looks like (its color, how shiny it is, texture, etc). You can look at the struct ```CS123SceneMaterial``` for details, but don't worry if you don't understand any of the terms if they haven't yet been covered in Lecture.
+All primitives will have a ```PrimitiveType``` and ```CS123SceneMaterial```.
+For meshes, the meshfile is a path to an .obj or equivalent file that has mesh geometry.
+The material field describes all the important information about what the primitive looks like (its color, how shiny it is, texture, etc). You can look at the struct ```CS123SceneMaterial``` for details, but don't worry if you don't understand any of the terms if they haven't yet been covered in Lecture.
 
 Notice that unlike the lights or camera structs, there aren't any fields in ```CS123ScenePrimitive``` that describe position or orientation. This is because it is more practical to use **transformation graphs** to manage this, especially when we have a lot of primitives!
 
-### 2.4. Transformation Graphs
+### 2.5. Transformation Graphs
 
-Since all the geometry in our scene is made up of hundreds or thousands of the primitives seen just above, keeping track of the transformations for each one can be particularly inefficient. This is especially true when we notice that many (but not all) of the same transformations are applied to many primitives in the scene. When creating a scene, it also means that we would have to calculate the exact position and orientation of every primitive!
+Since the geometry in our scene is made up of tens or hundrends of primitives, keeping track of the transformations for each one can be particularly inefficient. When creating a scene, it also means that we would have to know the exact final position and orientation of every primitive!
 
 <details>
   <summary>Example of a cityscape</summary>
-If our scene is a city, it would be senseless to describe the positions of all the windows by their distance from the center of the city. It would be much more sensible to describe each window's position relative to the building it is part of, and describe the building's position relative to its neighborhood, and finally the neighborhood's position relative to the center of the city.
-Since everything in our scene is made up of primitives, moving a house to a different position would be as simple as applying a transformation matrix to the house.
+If our scene is a city, it would be senseless to describe the positions of all the windows by their distance from the center of the city. It would be much more sensible to describe each window's position relative to the building it is part of, place the building on the street it is on, and then describe the  street's position relative to the center of the city.
+Moving a house to a different position would be as simple as applying a transformation matrix to the house, and consequently having that translation applied to every window and primitive it contains.
 </details>
 
-We can consequently define nested groupings of geometry that compose our scene. This is particularly helpful for managing the transformation matrices of objects in a compact way.
+Consequently, when creating a scene, it is helpful to work with rotation, scaling and translation matricies applied to groupings of objects. However, when rendering a scene, we will need a single transformation matrix for each primitive.
+Remember how in the transforms lab you learned to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In the next two subsections, you will learn how to use **transformation graphs** to build final transformation matrices for each primitive.
 
 <details>
   <summary>Example of a cityscape continued</summary>
-In our city, we can define a first grouping as the neighborhoods, which can themselves be made up of sub-groupings consisting of buildings, which can be made of further sub-groupings of windows, doors and roofs, until we get to the primitives like cubes, pyramids, and cylinders. 
+In our city, we can define a first grouping as the streets, which can themselves be made up of sub-groupings consisting of buildings, which can be made of further sub-groupings of windows, doors and roofs, until we get to the primitives like cubes, pyramids, and cylinders. 
 </details>
 
-We can represent the objects in a scene and their transformations as a directed acyclic graph, which we will call a scene graph or **transformation graphs**.
+### 2.5.1. A Simple Transformation Graph
 
-Consider the graph below that represents four primitives in a scene (two spheres, one cube, one cone and a cylinder found on the leaf nodes). Transformation matrices (denoted M1, M2, etc.) are represented on the branches of the graph. All nodes that are not leaf nodes are also called **transblocks** and can be thought of as groupings of objects as mentioned above.
+Consider the graph below that represents four primitives in a scene (two spheres, one cube, one cone and a cylinder):
 
 ![Scene Graph Image](img/Parsing_Lab_Simple_Graph.jpg)
 
-
-**Task 1. a. Order of Multiplication**
-Write the cumulative matrix for each of the primitives (leaf nodes) in terms of matrices M1, M2, etc. Your answer should be a product of matrices.
+Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```M2```, etc.) are represented on the branches of the graph, and are applied to every child node. All nodes that are not leaf nodes are also called **transblocks** and can be thought of as groupings of objects as mentioned above.
 
 
-Now consider the graph below. Instead of transformation matricies M1, M2, etc. we now have individual transformations such as Scaling, Translation and Rotation. These are written in the form S, T and R followed by the parameters needed for each transformation. For example S(15,.1,1) scales by 15 in the x direction, by .1 in the y direction and by 1 in the z direction. Note that Rotations have four parameters, the first three describing the axis of rotation in terms of x,y and z axes, and the last parameter describing the angle of rotation in degrees.
+**Task 1. Final Transformation Matrices**
+Write the final transformation matrix for each of the primitives in terms of matrices M1, M2, etc. Your answer should be a product of matrices. Keep in mind that order matters when multiplying matricies!
 
-Like before, only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc). 
-<details>
-  <summary>What scene does this graph actually represent?</summary>
-It represents a simplified version of our city example. We have divided our model into two districts (Willow Street and Main Street). Each of these districts has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
-</details>
+_Aside: A final transformation matrix is also called a **cumulative transformation matrix**._
 
-The letters S, T and R describe transformations applied to the children nodes.
-```S(15, .1,1)```
-<details>
-  <summary>What does the notation like </summary>
-We have divided our model into two districts (Willow Street and Main Street). Each of these districts has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
-</details>
-S stands for Scale, T for Transformation, R for Rotation, and the numbers in parentheses. 
+### 2.5.2. A More Complex Transformation Graph
+Now, consider the graph below:
  
 ![Scene Graph Image](img/Parsing_Lab_City_Graph_v4.jpg)
+Instead of transformation matricies ```M1```, ```M2```, etc. we have individual transformations such as Scaling, Translation and Rotation. These are written in the form ```S```, ```T``` and ```R``` followed by the parameters needed for each transformation. For example ```S(15,.1,1)``` scales by ```15``` in the x direction, by ```.1``` in the y direction and by ```1``` in the z direction. Note that Rotations have four parameters, the first three describing the axis of rotation in terms of x, y and z axes, and the last parameter describing the angle of rotation in degrees.
 
+Like before, only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc). 
 
-Remember how in the transforms lab you learned how to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In order to transform each primitive to its final place, you will need one of these transformation matrices for each of the primitives in your scene.
-Keep in mind that order matters when multiplying matricies!
-
+<details>
+  <summary>What scene does this graph represent?</summary>
+It represents a simplified version of our city example. We have divided our model into two streets (Willow Street and Main Street). Each of these has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
+</details>
 
 **Task 2. a. Order of Multiplication of Individual Transformations**
-For two Cubes of your choice, write down the order in which the three matricies should be applied. You can write each matrix in the form S(0, 6, .1) where S is the type of transformation (S for Scale, T for Translation, R for Rotation) and the parameters
+Write a matrix ```M1``` that is all the transformations applied only to Cube 2. You matrix ```M1``` should be in the form of a product of scaling, rotation and translation matricies. You can write each transformation matrix in the form ```S(x, y, z)```.
 
 **Task 2. b. Building the Final Transformation Matrices**
-For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices T, R, S, etc., as needed. You can use the same notation as 1. a.
+For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices ```S(x, y, z)```, ```R(x, y, z, angle)```, ```T(x, y, z)```, as needed.
 
 **Task 3. Navigating the Scene Graph Efficiently**
 
@@ -157,7 +184,9 @@ Explain how your approach is better in terms of time complexity, and write pseud
 
 ## 3. Implementing a Scene Parser
 
-In this section, you will load in the lights, camera and scene data. You will also implement a depth first search to generate the final transformation matrices for each matrix. To do this, you will be filling in out a struct called CS123SceneMetaData in `CS123SceneLoader::load`, based off of data found in the scene provided by a SceneData struct (SceneData.h).
+By now, you should know all about how we represent global, light, camera, primitive and transformation data.
+
+You will also implement a depth first search to generate the final transformation matrices for each primitive. To do this, you will be filling in out a struct called CS123SceneMetaData in `CS123SceneLoader::load`, based off of data found in the scene provided by a SceneData struct (SceneData.h).
 
 ### 3.1. Understanding SceneData.h
 
