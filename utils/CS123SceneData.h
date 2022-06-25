@@ -12,7 +12,17 @@
 
 #include "glm/glm.hpp"
 
-//2.1. Lights
+// 2.1. Global Data
+struct CS123SceneGlobalData  {
+   // Scene global color coefficients
+   float ka;  // global ambient coefficient
+   float kd;  // global diffuse coefficient
+   float ks;  // global specular coefficient
+   float kt;  // global transparency coefficient
+};
+
+
+// 2.2. Lights
 enum class LightType {
     LIGHT_POINT, LIGHT_DIRECTIONAL, LIGHT_SPOT, LIGHT_AREA
 };
@@ -36,7 +46,7 @@ struct CS123SceneLightData {
 };
 
 
-// 2.2. Camera
+// 2.3. Camera
 struct CS123SceneCameraData {
    glm::vec4 pos;
    glm::vec4 look;
@@ -50,7 +60,7 @@ struct CS123SceneCameraData {
 };
 
 
-// 2.3. Primitives
+// 2.4. Primitives
 enum class PrimitiveType {
     PRIMITIVE_CUBE,
     PRIMITIVE_CONE,
@@ -67,9 +77,7 @@ struct CS123ScenePrimitive {
 };
 
 
-
-// 2.4. Transformation Graphs
-
+// 2.5. Transformation Graphs
 // Enumeration for types of transformations that can be applied to objects, lights, and cameras.
 enum TransformationType {
    TRANSFORMATION_TRANSLATE, TRANSFORMATION_SCALE, TRANSFORMATION_ROTATE, TRANSFORMATION_MATRIX
@@ -111,14 +119,6 @@ auto as_integer(Enumeration const value)
 
 // Struct to store a RGBA color in floats [0,1]
 using CS123SceneColor = glm::vec4;
-
-// Scene global color coefficients
-struct CS123SceneGlobalData  {
-   float ka;  // global ambient coefficient
-   float kd;  // global diffuse coefficient
-   float ks;  // global specular coefficient
-   float kt;  // global transparency coefficient
-};
 
 // Data for file maps (ie: texture maps)
 struct CS123SceneFileMap {
