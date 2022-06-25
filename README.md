@@ -73,11 +73,11 @@ using CS123SceneColor = glm::vec4;
 You can look at lines 112 - 113 to see how color is represented. You should have already worked with with RGBA color in Brush and Filter.
 </details>
 
-**Point lights** are an single point in space that emits light (~lightbulb). They don't need a direction vector.
+**Point lights** are an single point in space that emits light equally in all directions (~lightbulb). They don't need a direction vector.
 
 **Directional lights** simulate light from a source that is extremely far away (e.g. the sun). Because of this, they don't have an attenuation function.
 
-**Spot lights** emit light in a cone shape (~a flashlight). They need an angle and radius to describe the dimentions of the cone, as well as a direction and position. The penumbra is how much the light fades away along the edges of the cone.
+**Spot lights** emit light in a cone shape (~a flashlight). They need an angle and radius to describe the dimentions of the cone, a direction to know where the base of the cone points to, and a position. The penumbra is how much the light fades away along the edges of the cone.
 
 **Area lights** are squares that emit light in all directions uniformly accross their surface.
 
