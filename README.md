@@ -124,7 +124,9 @@ The material field describes all the important information about what the primit
 
 Notice that unlike the lights or camera structs, there aren't any fields in ```CS123ScenePrimitive``` that describe position or orientation. This is because it is more practical to use **transformation graphs** to manage this, especially when we have a lot of primitives!
 
-### 2.5. Transformation Graphs
+### 2.5. Transformations
+
+### 2.6. Transformation Graphs
 
 Since the geometry in our scene is made up of tens or hundrends of primitives, keeping track of the transformations for each one can be particularly inefficient. When creating a scene, it also means that we would have to know the exact final position and orientation of every primitive!
 
@@ -138,12 +140,14 @@ Consequently, when creating a scene, it is helpful to work with rotation, scalin
 
 Remember how in the transforms lab you learned to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In the next two subsections, you will learn how to use **transformation graphs** to build final transformation matrices for each primitive.
 
+_Aside: A final transformation matrix is also called a **cumulative transformation matrix**._
+
 <details>
   <summary>Example of a cityscape continued</summary>
 In our city, we can define a first grouping as the streets, which can themselves be made up of sub-groupings consisting of buildings, which can be made of further sub-groupings of windows, doors and roofs, until we get to the primitives like cubes, pyramids, and cylinders. 
 </details>
 
-### 2.5.1. A Simple Transformation Graph
+### 2.6.1. A Simple Transformation Graph
 
 Consider the graph below that represents four primitives in a scene (two spheres, one cube, one cone and a cylinder):
 
@@ -152,16 +156,16 @@ Consider the graph below that represents four primitives in a scene (two spheres
 Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```M2```, etc.) are represented on the branches of the graph, and are applied to every child node. All nodes that are not leaf nodes are also called **transblocks** and can be thought of as groupings of objects as mentioned above.
 
 
-**Task 1. Final Transformation Matrices**
-Write the final transformation matrix for each of the primitives in terms of matrices M1, M2, etc. Your answer should be a product of matrices. Keep in mind that order matters when multiplying matricies!
+| Task 1  |
+| :------ |
+|  Write the final transformation matrix for the Cube, Cone and Cylinder. <br/> <br/> <ul> <li> A final transformation matrix is a matrix that transforms a primitive to its final position and orientation in the scene. </li> <li>Your answer should be a product of matrices ```M1```, ```M2```, etc. </li> <li>Keep in mind that order matters when multiplying matricies! </li> </ul>|
 
-_Aside: A final transformation matrix is also called a **cumulative transformation matrix**._
 
-### 2.5.2. A More Complex Transformation Graph
+### 2.6.2. A More Complex Transformation Graph
 Now, consider the graph below:
  
 ![Scene Graph Image](img/Parsing_Lab_City_Graph_v4.jpg)
-Instead of transformation matricies ```M1```, ```M2```, etc. we have individual transformations such as Scaling, Translation and Rotation. These are written in the form ```S```, ```T``` and ```R``` followed by the parameters needed for each transformation. For example ```S(15,.1,1)``` scales by ```15``` in the x direction, by ```.1``` in the y direction and by ```1``` in the z direction. Note that Rotations have four parameters, the first three describing the axis of rotation in terms of x, y and z axes, and the last parameter describing the angle of rotation in degrees.
+Instead of transformation matricies ```M1```, ```M2```, etc. we have individual transformations such as Scaling, Translation and Rotation. These are written in the form ```S```, ```T``` and ```R``` followed by the parameters needed for each transformation. For example ```S(15,.1,1)``` scales by ```15``` in the x direction, by ```.1``` in the y direction and by ```1``` in the z direction. Note that Rotations have four parameters, like ```R(x, y, z, angle)```. The first three parameters describe the axis of rotation in terms of ```x```, ```y``` and ```z``` axes, and the last parameter is the angle of rotation in degrees.
 
 Like before, only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc). 
 
@@ -170,20 +174,20 @@ Like before, only the leaves of this tree contain any real geometry in the form 
 It represents a simplified version of our city example. We have divided our model into two streets (Willow Street and Main Street). Each of these has a road which is made of one cube that is stretched in the x and squished in the y, as well as a building. Each building is made up of a cube and a door, which is also made up of two cubes! In total we have 8 primitives, all of which are cubes. 
 </details>
 
-**Task 2. a. Order of Multiplication of Individual Transformations**
-- Write a matrix ```M1``` that is all the transformations applied only to Cube 2. 
+| Task 2 |
+| :----- |
+| Write a matrix ```M1``` that is all the transformations applied only to Cube 2. </br> </br> <ul> <li> Your matrix ```M1``` should be in the form of a product of scaling, rotation and translation matrices. </li>  <li> You can write each scaling, rotation and translation matrices in the form ```S(x, y, z)```, ```R(x, y, z, angle)``` and ```T(x, y, z)```.</li> </ul>|
 
-Your matrix ```M1``` should be in the form of a product of scaling, rotation and translation matricies. You can write each transformation matrix in the form ```S(x, y, z)```.
 
-**Task 2. b. Building the Final Transformation Matrices**
-- For cubes 1, 3 and 8, write the final transformation matrix in terms of a product of matrices ```S(x, y, z)```, ```R(x, y, z, angle)```, ```T(x, y, z)```, as needed.
+| Task 3 |
+| :----- |
+| Write the final transformation matrix for cubes 1, 3 and 8. </br> </br> <ul> <li> This should again be a product of scaling, rotation and translation matrices in the form ```S(x, y, z)```, ```R(x, y, z, angle)``` and ```T(x, y, z)```.</li> </ul>|
 
-**Task 3. Navigating the Scene Graph Efficiently**
+In the previous exercise, you should have noticed that the same transformations repeat for different primitives. Given a tree like the one above, we need a final transformation matrix for each primitive. However, it would be inefficient to traverse the scene graph from the root node every time for each primitive. 
 
-In the previous exercise, you should have noticed that the transformations repeat for different primitives.
-- Explain why traversing a scene graph from the root node every time each primitive is rendered is inefficient. 
-- Consider how you might build the final transformation matricies using depth first search.
-Explain how your approach is better in terms of time complexity, and write pseudocode for it.
+| Task 4 |
+| :----- |
+| Consider how you might build the final transformation matricies from a scene graph using depth first search. Explain how your approach is better in terms of time complexity, and write pseudocode for it. |
 
 
 ## 3. Implementing a Scene Parser

@@ -12,6 +12,64 @@
 
 #include "glm/glm.hpp"
 
+
+// Struct to store a RGBA color in floats [0,1]
+using CS123SceneColor = glm::vec4;
+
+// Data for file maps (ie: texture maps)
+struct CS123SceneFileMap {
+//    CS123SceneFileMap() : texid(0) {}
+   bool isUsed;
+   std::string filename;
+   float repeatU;
+   float repeatV;
+
+   void clear() {
+       isUsed = false;
+       repeatU = 0.0f;
+       repeatV = 0.0f;
+       filename = std::string();
+   }
+};
+
+// Data for scene materials
+struct CS123SceneMaterial {
+   // This field specifies the diffuse color of the object. This is the color you need to use for
+   // the object in sceneview. You can get away with ignoring the other color values until
+   // intersect and ray.
+//   CS123SceneMaterial() {}
+   CS123SceneColor cDiffuse;
+
+   CS123SceneColor cAmbient;
+   CS123SceneColor cReflective;
+   CS123SceneColor cSpecular;
+   CS123SceneColor cTransparent;
+   CS123SceneColor cEmissive;
+
+   CS123SceneFileMap textureMap;
+   float blend;
+
+   CS123SceneFileMap bumpMap;
+
+   float shininess;
+
+   float ior; // index of refraction
+
+   void clear() {
+       cAmbient.r = 0.0f; cAmbient.g = 0.0f; cAmbient.b = 0.0f; cAmbient.a = 0.0f;
+       cDiffuse.r = 0.0f; cDiffuse.g = 0.0f; cDiffuse.b = 0.0f; cDiffuse.a = 0.0f;
+       cSpecular.r = 0.0f; cSpecular.g = 0.0f; cSpecular.b = 0.0f; cSpecular.a = 0.0f;
+       cReflective.r = 0.0f; cReflective.g = 0.0f; cReflective.b = 0.0f; cReflective.a = 0.0f;
+       cTransparent.r = 0.0f; cTransparent.g = 0.0f; cTransparent.b = 0.0f; cTransparent.a = 0.0f;
+       cEmissive.r = 0.0f; cEmissive.g = 0.0f; cEmissive.b = 0.0f; cEmissive.a = 0.0f;
+       textureMap.clear();
+       bumpMap.clear();
+       blend = 0.0f;
+       shininess = 0.0f;
+       ior = 0.0;
+   }
+};
+
 // 2.1. Global Data
 struct CS123SceneGlobalData  {
    // Scene global color coefficients
@@ -109,70 +167,12 @@ struct CS123SceneNode {
 
 
 
-
 template <typename Enumeration>
 auto as_integer(Enumeration const value)
     -> typename std::underlying_type< Enumeration >::type
 {
     return static_cast<typename std::underlying_type<Enumeration>::type>(value);
 }
-
-// Struct to store a RGBA color in floats [0,1]
-using CS123SceneColor = glm::vec4;
-
-// Data for file maps (ie: texture maps)
-struct CS123SceneFileMap {
-//    CS123SceneFileMap() : texid(0) {}
-   bool isUsed;
-   std::string filename;
-   float repeatU;
-   float repeatV;
-
-   void clear() {
-       isUsed = false;
-       repeatU = 0.0f;
-       repeatV = 0.0f;
-       filename = std::string();
-   }
-};
-
-// Data for scene materials
-struct CS123SceneMaterial {
-   // This field specifies the diffuse color of the object. This is the color you need to use for
-   // the object in sceneview. You can get away with ignoring the other color values until
-   // intersect and ray.
-//   CS123SceneMaterial() {}
-   CS123SceneColor cDiffuse;
-   
-   CS123SceneColor cAmbient;
-   CS123SceneColor cReflective;
-   CS123SceneColor cSpecular;
-   CS123SceneColor cTransparent;
-   CS123SceneColor cEmissive;
-
-   CS123SceneFileMap textureMap;
-   float blend;
-
-   CS123SceneFileMap bumpMap;
-
-   float shininess;
-
-   float ior; // index of refraction
-
-   void clear() {
-       cAmbient.r = 0.0f; cAmbient.g = 0.0f; cAmbient.b = 0.0f; cAmbient.a = 0.0f;
-       cDiffuse.r = 0.0f; cDiffuse.g = 0.0f; cDiffuse.b = 0.0f; cDiffuse.a = 0.0f;
-       cSpecular.r = 0.0f; cSpecular.g = 0.0f; cSpecular.b = 0.0f; cSpecular.a = 0.0f;
-       cReflective.r = 0.0f; cReflective.g = 0.0f; cReflective.b = 0.0f; cReflective.a = 0.0f;
-       cTransparent.r = 0.0f; cTransparent.g = 0.0f; cTransparent.b = 0.0f; cTransparent.a = 0.0f;
-       cEmissive.r = 0.0f; cEmissive.g = 0.0f; cEmissive.b = 0.0f; cEmissive.a = 0.0f;
-       textureMap.clear();
-       bumpMap.clear();
-       blend = 0.0f;
-       shininess = 0.0f;
-       ior = 0.0;
-   }
-};
 
 #endif
 
