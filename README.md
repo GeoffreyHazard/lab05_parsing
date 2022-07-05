@@ -206,7 +206,7 @@ Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```
 ### 2.6.2. A More Complex Transformation Graph
 Now, consider the graph below:
  
-![Scene Graph Image](img/Parsing_Lab_City_Graph_v4.jpg)
+![Scene Graph Image](img/Parsing_Lab_City_Graph_v5.jpg)
 Instead of transformation matricies ```M1```, ```M2```, etc. we have individual transformations such as Scaling, Translation and Rotation. These are written in the form ```S```, ```T``` and ```R``` followed by the parameters needed for each transformation. For example ```S(15,.1,1)``` scales by ```15``` in the x direction, by ```.1``` in the y direction and by ```1``` in the z direction. Note that Rotations have four parameters, like ```R(x, y, z, angle)```. The first three parameters describe the axis of rotation in terms of ```x```, ```y``` and ```z``` axes, and the last parameter is the angle of rotation in degrees.
 
 Like before, only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc). 
