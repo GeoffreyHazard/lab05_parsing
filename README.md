@@ -2,7 +2,7 @@
 
 ## 1.1. Introduction
 
-In this lab, you will learn how to work with **scene files** to load all the information you need to render a 3d scene. In particular, you will learn how lights and cameras are represented, as well as how to read **transformation graphs** so that every object has the correct size and position in the scene. You will use the code you’ve written in this lab for the upcoming assignments, including the Ray and Realtime projects!
+In this lab, you will learn how to work with **scene files** to load all the information you need to render a 3d scene. Notably, you will learn how lights and cameras are represented, as well as how to read **transformation graphs** so that every object has the correct size and position in the scene. You will use the code you’ve written in this lab for the upcoming assignments, including the Ray and Realtime projects!
 
 ## 2. Understanding Scene Files
 
