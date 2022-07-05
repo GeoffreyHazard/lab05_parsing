@@ -70,6 +70,7 @@ struct CS123SceneMaterial {
    }
 };
 
+
 // 2.1. Global Data
 struct CS123SceneGlobalData  {
    // Scene global color coefficients
@@ -141,8 +142,8 @@ enum TransformationType {
    TRANSFORMATION_TRANSLATE, TRANSFORMATION_SCALE, TRANSFORMATION_ROTATE, TRANSFORMATION_MATRIX
 };
 
-// Data for transforming a scene object. Aside from the TransformationType, the remaining of the
-// data in the struct is mutually exclusive.
+// Data for transforming a scene object. Aside from the TransformationType, the remaining
+// fields are mutually exclusive.
 struct CS123SceneTransformation {
     TransformationType type;
 
@@ -156,6 +157,8 @@ struct CS123SceneTransformation {
                          // a custom matrix.
 };
 
+
+// 2.5. Transformation Graphs
 // Structure for non-primitive scene objects
 struct CS123SceneNode {
    std::vector<CS123SceneTransformation*> transformations;
