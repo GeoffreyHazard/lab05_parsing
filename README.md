@@ -99,7 +99,7 @@ struct CS123SceneCameraData {
 Look familiar? The camera is also just a struct with the relevant fields needed to describe its attributes! The position, look and up vectors of the camera are all described in world space (recall the discussion of world space/camera space from last week's transform's lab).
 
 ### 2.4. Primitives
-Moving on to ```lines 64 - 71```, we have multiple different types of primitives:
+Moving on to ```lines 64 - 71```:
 ```cpp
 enum class PrimitiveType {
     PRIMITIVE_CUBE,
@@ -126,34 +126,76 @@ Notice that unlike the lights or camera structs, there aren't any fields in ```C
 
 ### 2.5. Transformations
 
+On ```lines 141 - 143``` you will find the ```TransformationType```.
+
+Remember how in the transforms lab you learned to compose a series of rotation, scaling and translation matricies into a single transformation matrix? 
+While every (linear) transfromation can be written as a matrix, it is easier when placing objects in a scene to work with translation, scaling and rotation. This is why we will work with four types of transformations:
+
+```cpp
+enum TransformationType {
+   TRANSFORMATION_TRANSLATE, TRANSFORMATION_SCALE, TRANSFORMATION_ROTATE, TRANSFORMATION_MATRIX
+};
+```
+
+Just like lights and primitives, the type of transformation is then stored in a struct that contains the specific information. See ```lines 146 - 158```:
+
+```cpp
+struct CS123SceneTransformation {
+    TransformationType type;
+
+    // The following fields are mutually exclusive.
+    glm::vec3 translate; // The translation vector. Only valid if transformation is a translation.
+
+    glm::vec3 scale;     // The scale vector. Only valid if transformation is a scale.
+
+    glm::vec3 rotate;    // The axis of rotation. Only valid if the transformation is a rotation.
+    float angle;         // The rotation angle in RADIANS. Only valid if transformation is a rotation.
+
+    glm::mat4x4 matrix;  // The matrix for the transformation. Only valid if the transformation is a custom matrix.
+};
+```
+
 ### 2.6. Transformation Graphs
 
-Since the geometry in our scene is made up of tens or hundrends of primitives, keeping track of the transformations for each one can be particularly inefficient. When creating a scene, it also means that we would have to know the exact final position and orientation of every primitive!
+Scenes often have tens or hundrends of primitives, each with multiple different transformations! When creating a scene, it means that we'd have to know the exact final position and orientation of every primitive. When rendering, storing the transformations for each one can be particularly inefficient, especially when often **a single transformation is repeated on many different objects**.  
+
+Take a look at ```lines 163 - 169```:
+```cpp
+struct CS123SceneNode {
+   std::vector<CS123SceneTransformation*> transformations;
+
+   std::vector<CS123ScenePrimitive*> primitives;
+
+   std::vector<CS123SceneNode*> children;
+};
+```
+
+Here we have created a node struct that will allow us to build a **transformation graph**. If a ```CS123SceneNode``` has ```children```, it will also likely contain ```transformations``` to apply to those ```children```, and so on, until we get to a node that has ```primitives```.
+
+Note that since ```CS123SceneNode```s exist to avoid repetitions of transformations applied to primitives,  they cannot have both ```transformations``` and ```primitives```, or ```children``` and ```primitives```.
 
 <details>
   <summary>Example of a cityscape</summary>
 If our scene is a city, it would be senseless to describe the positions of all the windows by their distance from the center of the city. It would be much more sensible to describe each window's position relative to the building it is part of, place the building on the street it is on, and then describe the  street's position relative to the center of the city.
 Moving a house to a different position would be as simple as applying a transformation matrix to the house, and consequently having that translation applied to every window and primitive it contains.
-</details>
-
-Consequently, when creating a scene, it is helpful to work with rotation, scaling and translation matricies applied to groupings of objects. However, when rendering a scene, we will need a single transformation matrix for each primitive.
-
-Remember how in the transforms lab you learned to compose a series of rotation, scaling and translation matricies into a single transformation matrix? In the next two subsections, you will learn how to use **transformation graphs** to build final transformation matrices for each primitive.
-
-_Aside: A final transformation matrix is also called a **cumulative transformation matrix**._
+</details> </br>
 
 <details>
   <summary>Example of a cityscape continued</summary>
 In our city, we can define a first grouping as the streets, which can themselves be made up of sub-groupings consisting of buildings, which can be made of further sub-groupings of windows, doors and roofs, until we get to the primitives like cubes, pyramids, and cylinders. 
-</details>
+</details> </br>
 
 ### 2.6.1. A Simple Transformation Graph
+
+In these two subsections, you will learn how to use **transformation graphs** to build final transformation matrices for each primitive.
+
+_Aside: A final transformation matrix is also called a **cumulative transformation matrix**._
 
 Consider the graph below that represents four primitives in a scene (two spheres, one cube, one cone and a cylinder):
 
 ![Scene Graph Image](img/Parsing_Lab_Simple_Graph.jpg)
 
-Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```M2```, etc.) are represented on the branches of the graph, and are applied to every child node. All nodes that are not leaf nodes are also called **transblocks** and can be thought of as groupings of objects as mentioned above.
+Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```M2```, etc.) are represented on the branches of the graph, and are applied to every child node. All nodes that are not leaf nodes are ```CS123SceneNode```s (also called **transblocks**) and can be thought of as groupings of objects as mentioned in **2.6**.
 
 
 | Task 1  |
