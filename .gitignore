@@ -58,7 +58,8 @@ compile_commands.json
 
 # Products
 parsing
-parsing.exe
+*.exe
+*.app
 
 # Mac OS
 *.DS_Store
