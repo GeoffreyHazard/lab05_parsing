@@ -1,9 +1,8 @@
 #include "glwidget.h"
 #include <iostream>
 #include <QOpenGLFunctions>
-#include "utils/CS123SceneLoader.h"
+#include "parser/sceneparser.h"
 
-using namespace CS123;
 
 void GLWidget::initializeGL() {
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
@@ -22,7 +21,7 @@ void GLWidget::paintGL() {
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void GLWidget::loadScene(const CS123SceneMetaData &metaData) {
+void GLWidget::loadScene(const SceneMetaData &metaData) {
     // TODO: The magic happens here lol
     std::cout << "GLWidget [loadScene] begin" << std::endl;
 

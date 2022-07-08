@@ -1,38 +1,39 @@
-#include "CS123SceneLoader.h"
-#include "CS123XmlSceneParser.h"
+#include "sceneparser.h"
+#include "scenefilereader.h"
 #include "glm/gtx/transform.hpp"
 
 #include <chrono>
 #include <memory>
 #include <iostream>
 
-using namespace CS123;
 using namespace std;
 
-bool CS123SceneLoader::load(std::string filepath, CS123SceneMetaData &oMetaData) {
-    shared_ptr<CS123XmlSceneParser> parser = make_shared<CS123XmlSceneParser>(filepath);
-    bool success = parser->parse();
+bool SceneParser::parse(std::string filepath, SceneMetaData &oMetaData) {
+    shared_ptr<ScenefileReader> fileReader = make_shared<ScenefileReader>(filepath);
+    bool success = fileReader->parseXML();
     if (!success) {
         return false;
     }
+
+    /* TA SOLUTION BEGIN */
 
     // load the scene with the data in the parser
     oMetaData.lights.clear();
     oMetaData.shapes.clear();
 
-    parser->getCameraData(oMetaData.cameraData);
-    parser->getGlobalData(oMetaData.globalData);
+    fileReader->getCameraData(oMetaData.cameraData);
+    fileReader->getGlobalData(oMetaData.globalData);
 
-    int numLights = parser->getNumLights();
+    int numLights = fileReader->getNumLights();
     oMetaData.lights.reserve(numLights);
 
     for (int i = 0; i < numLights; i++) {
-        CS123SceneLightData lightData;
-        parser->getLightData(i, lightData);
+        SceneLightData lightData;
+        fileReader->getLightData(i, lightData);
         oMetaData.lights.emplace_back(lightData);
     }
 
-    CS123SceneNode *root = parser->getRootNode();
+    SceneNode *root = fileReader->getRootNode();
     glm::mat4 matrix(1.0f);
 
     auto startTS = std::chrono::system_clock::now();
@@ -44,10 +45,14 @@ bool CS123SceneLoader::load(std::string filepath, CS123SceneMetaData &oMetaData)
     std::chrono::duration<double> elapsed_seconds = endTS - startTS;
     std::cout << "Complete loading scene. Time elapse: " << elapsed_seconds.count() * 1000.f << "ms" << std::endl;
 
+    /* TA SOLUTION END */
+
     return true;
 }
 
-void CS123SceneLoader::dfsParseSceneNode(CS123SceneMetaData &oMetaData, CS123SceneNode *node, glm::mat4 matrix) {
+/* TA SOLUTION BEGIN */
+
+void SceneParser::dfsParseSceneNode(SceneMetaData &oMetaData, SceneNode *node, glm::mat4 matrix) {
     if (node == nullptr) {
         return;
     }
@@ -82,12 +87,14 @@ void CS123SceneLoader::dfsParseSceneNode(CS123SceneMetaData &oMetaData, CS123Sce
     }
 
     for (auto primitive : node->primitives) {
-        CS123SceneShapeData shape = {.primitive = *primitive, .ctm = matrix};
+        SceneShapeData shape = {.primitive = *primitive, .ctm = matrix};
         oMetaData.shapes.emplace_back(shape);
     }
 
-    for (CS123SceneNode * child : node->children) {
+    for (SceneNode * child : node->children) {
         dfsParseSceneNode(oMetaData, child, matrix);
     }
     return;
 }
+
+/* TA SOLUTION BEGIN */

@@ -2,8 +2,8 @@
  * CS123 New Parser for XML
  */
 
-#include "CS123XmlSceneParser.h"
-#include "CS123SceneData.h"
+#include "scenefilereader.h"
+#include "scenedefinition.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -20,20 +20,20 @@
 #define UNSUPPORTED_ELEMENT(e) std::cout << ERROR_AT(e) << "unsupported element <" \
     << e.tagName().toStdString() << ">" << std::endl;
 
-CS123XmlSceneParser::CS123XmlSceneParser(const std::string& name) 
+ScenefileReader::ScenefileReader(const std::string& name)
 {
     file_name = name;
 
-    memset(&m_cameraData, 0, sizeof(CS123SceneCameraData));
-    memset(&m_globalData, 0, sizeof(CS123SceneGlobalData));
+    memset(&m_cameraData, 0, sizeof(SceneCameraData));
+    memset(&m_globalData, 0, sizeof(SceneGlobalData));
     m_objects.clear();
     m_lights.clear();
     m_nodes.clear();
 }
 
-CS123XmlSceneParser::~CS123XmlSceneParser()
+ScenefileReader::~ScenefileReader()
 {
-    std::vector<CS123SceneLightData*>::iterator lights;
+    std::vector<SceneLightData*>::iterator lights;
     for (lights = m_lights.begin(); lights != m_lights.end(); lights++) {
         delete *lights;
     }
@@ -57,21 +57,21 @@ CS123XmlSceneParser::~CS123XmlSceneParser()
     m_objects.clear();
 }
 
-bool CS123XmlSceneParser::getGlobalData(CS123SceneGlobalData& data) const {
+bool ScenefileReader::getGlobalData(SceneGlobalData& data) const {
     data = m_globalData;
     return true;
 }
 
-bool CS123XmlSceneParser::getCameraData(CS123SceneCameraData& data) const {
+bool ScenefileReader::getCameraData(SceneCameraData& data) const {
     data = m_cameraData;
     return true;
 }
 
-int CS123XmlSceneParser::getNumLights() const {
+int ScenefileReader::getNumLights() const {
     return m_lights.size();
 }
 
-bool CS123XmlSceneParser::getLightData(int i, CS123SceneLightData& data) const {
+bool ScenefileReader::getLightData(int i, SceneLightData& data) const {
     if (i < 0 || (unsigned int)i >= m_lights.size()) {
         std::cout << "invalid light index %d" << std::endl;
         return false;
@@ -80,15 +80,15 @@ bool CS123XmlSceneParser::getLightData(int i, CS123SceneLightData& data) const {
     return true;
 }
 
-CS123SceneNode* CS123XmlSceneParser::getRootNode() const {
-    std::map<std::string, CS123SceneNode*>::iterator node = m_objects.find("root");
+SceneNode* ScenefileReader::getRootNode() const {
+    std::map<std::string, SceneNode*>::iterator node = m_objects.find("root");
     if (node == m_objects.end())
         return nullptr;
     return m_objects["root"];
 }
 
 // This is where it all goes down...
-bool CS123XmlSceneParser::parse() {
+bool ScenefileReader::parseXML() {
     // Read the file
     QFile file(file_name.c_str());
     if (!file.open(QFile::ReadOnly)) {
@@ -268,7 +268,7 @@ bool parseMatrix(const QDomElement &matrix, glm::mat4 &m) {
  * Helper function to parse a color.  Will parse an element with r, g, b, and
  * a attributes (the a attribute is optional and defaults to 1).
  */
-bool parseColor(const QDomElement &color, CS123SceneColor &c) {
+bool parseColor(const QDomElement &color, SceneColor &c) {
     c.a = 1;
     return parseQuadruple(color, c.r, c.g, c.b, c.a, "r", "g", "b", "a") ||
            parseQuadruple(color, c.r, c.g, c.b, c.a, "x", "y", "z", "w") ||
@@ -280,7 +280,7 @@ bool parseColor(const QDomElement &color, CS123SceneColor &c) {
  * Helper function to parse a texture map tag.  Example texture map tag:
  * <texture file="/course/cs123/data/image/andyVanDam.jpg" u="1" v="1"/>
  */
-bool parseMap(const QDomElement &e, CS123SceneFileMap &map) {
+bool parseMap(const QDomElement &e, SceneFileMap &map) {
     if (!e.hasAttribute("file"))
         return false;
     map.filename = e.attribute("file").toStdString();
@@ -293,7 +293,7 @@ bool parseMap(const QDomElement &e, CS123SceneFileMap &map) {
 /**
  * Parse a <globaldata> tag and fill in m_globalData.
  */
-bool CS123XmlSceneParser::parseGlobalData(const QDomElement &globaldata) {
+bool ScenefileReader::parseGlobalData(const QDomElement &globaldata) {
     // Iterate over child elements
     QDomNode childNode = globaldata.firstChild();
     while (!childNode.isNull()) {
@@ -328,11 +328,11 @@ bool CS123XmlSceneParser::parseGlobalData(const QDomElement &globaldata) {
 /**
  * Parse a <lightdata> tag and add a new CS123SceneLightData to m_lights.
  */
-bool CS123XmlSceneParser::parseLightData(const QDomElement &lightdata) {
+bool ScenefileReader::parseLightData(const QDomElement &lightdata) {
     // Create a default light
-    CS123SceneLightData* light = new CS123SceneLightData();
+    SceneLightData* light = new SceneLightData();
     m_lights.push_back(light);
-    memset(light, 0, sizeof(CS123SceneLightData));
+    memset(light, 0, sizeof(SceneLightData));
     light->pos = glm::vec4(3.f, 3.f, 3.f, 1.f);
     light->dir = glm::vec4(0.f, 0.f, 0.f, 0.f);
     light->color.r = light->color.g = light->color.b = 1;
@@ -448,7 +448,7 @@ bool CS123XmlSceneParser::parseLightData(const QDomElement &lightdata) {
 /**
  * Parse a <cameradata> tag and fill in m_cameraData.
  */
-bool CS123XmlSceneParser::parseCameraData(const QDomElement &cameradata) {
+bool ScenefileReader::parseCameraData(const QDomElement &cameradata) {
     bool focusFound = false;
     bool lookFound = false;
 
@@ -529,7 +529,7 @@ bool CS123XmlSceneParser::parseCameraData(const QDomElement &cameradata) {
 /**
  * Parse an <object> tag and create a new CS123SceneNode in m_nodes.
  */
-bool CS123XmlSceneParser::parseObjectData(const QDomElement &object) {
+bool ScenefileReader::parseObjectData(const QDomElement &object) {
     if (!object.hasAttribute("name")) {
         PARSE_ERROR(object);
         return false;
@@ -549,7 +549,7 @@ bool CS123XmlSceneParser::parseObjectData(const QDomElement &object) {
     }
 
     // Create the object and add to the map
-    CS123SceneNode *node = new CS123SceneNode;
+    SceneNode *node = new SceneNode;
     m_nodes.push_back(node);
     m_objects[name] = node;
 
@@ -558,7 +558,7 @@ bool CS123XmlSceneParser::parseObjectData(const QDomElement &object) {
     while (!childNode.isNull()) {
         QDomElement e = childNode.toElement();
         if (e.tagName() == "transblock") {
-            CS123SceneNode *child = new CS123SceneNode;
+            SceneNode *child = new SceneNode;
             m_nodes.push_back(child);
             if (!parseTransBlock(e, child)) {
                 PARSE_ERROR(e);
@@ -589,13 +589,13 @@ bool CS123XmlSceneParser::parseObjectData(const QDomElement &object) {
  *   <object type="primitive" name="sphere"/>
  * </transblock>
  */
-bool CS123XmlSceneParser::parseTransBlock(const QDomElement &transblock, CS123SceneNode* node) {
+bool ScenefileReader::parseTransBlock(const QDomElement &transblock, SceneNode* node) {
     // Iterate over child elements
     QDomNode childNode = transblock.firstChild();
     while (!childNode.isNull()) {
         QDomElement e = childNode.toElement();
         if (e.tagName() == "translate") {
-            CS123SceneTransformation *t = new CS123SceneTransformation();
+            SceneTransformation *t = new SceneTransformation();
             node->transformations.push_back(t);
             t->type = TRANSFORMATION_TRANSLATE;
 
@@ -604,7 +604,7 @@ bool CS123XmlSceneParser::parseTransBlock(const QDomElement &transblock, CS123Sc
                 return false;
             }
         } else if (e.tagName() == "rotate") {
-            CS123SceneTransformation *t = new CS123SceneTransformation();
+            SceneTransformation *t = new SceneTransformation();
             node->transformations.push_back(t);
             t->type = TRANSFORMATION_ROTATE;
 
@@ -617,7 +617,7 @@ bool CS123XmlSceneParser::parseTransBlock(const QDomElement &transblock, CS123Sc
             // Convert to radians
             t->angle = angle * M_PI / 180;
         } else if (e.tagName() == "scale") {
-            CS123SceneTransformation *t = new CS123SceneTransformation();
+            SceneTransformation *t = new SceneTransformation();
             node->transformations.push_back(t);
             t->type = TRANSFORMATION_SCALE;
 
@@ -626,7 +626,7 @@ bool CS123XmlSceneParser::parseTransBlock(const QDomElement &transblock, CS123Sc
                 return false;
             }
         } else if (e.tagName() == "matrix") {
-            CS123SceneTransformation* t = new CS123SceneTransformation();
+            SceneTransformation* t = new SceneTransformation();
             node->transformations.push_back(t);
             t->type = TRANSFORMATION_MATRIX;
 
@@ -647,7 +647,7 @@ bool CS123XmlSceneParser::parseTransBlock(const QDomElement &transblock, CS123Sc
                 while (!subNode.isNull()) {
                     QDomElement e = subNode.toElement();
                     if (e.tagName() == "transblock") {
-                        CS123SceneNode* n = new CS123SceneNode;
+                        SceneNode* n = new SceneNode;
                         m_nodes.push_back(n);
                         node->children.push_back(n);
                         if (!parseTransBlock(e, n)) {
@@ -682,10 +682,10 @@ bool CS123XmlSceneParser::parseTransBlock(const QDomElement &transblock, CS123Sc
 /**
  * Parse an <object type="primitive"> tag into node.
  */
-bool CS123XmlSceneParser::parsePrimitive(const QDomElement &prim, CS123SceneNode* node) {
+bool ScenefileReader::parsePrimitive(const QDomElement &prim, SceneNode* node) {
     // Default primitive
-    CS123ScenePrimitive* primitive = new CS123ScenePrimitive();
-    CS123SceneMaterial& mat = primitive->material;
+    ScenePrimitive* primitive = new ScenePrimitive();
+    SceneMaterial& mat = primitive->material;
     mat.clear();
     primitive->type = PrimitiveType::PRIMITIVE_CUBE;
     mat.textureMap.isUsed = false;
