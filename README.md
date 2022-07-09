@@ -1,16 +1,38 @@
 # Lab 5: Parsing
 
-## 1.1. Introduction
+## 1. Introduction
 
-In this lab, you will learn how to work with **scene files** to load all the information you need to render a 3d scene. Notably, you will learn how lights and cameras are represented, as well as how to read **transformation graphs** so that every object has the correct size and position in the scene. You will use the code you’ve written in this lab for the upcoming assignments, including the Ray and Realtime projects!
+In this lab, you will learn how to work with ```SceneData``` to load all the information you need to render a 3d scene. Notably, you will learn how lights, cameras and primitives are represented, as well as how to read **transformation graphs** so that every object has the correct final size and position. 
 
-## 2. Understanding Scene Files
+__You will need the code you’ve written in this lab for the upcoming assignments, including the Ray and Realtime projects!__
 
-To visualize a compelling 3d scene, we need data about the lights, camera, textures, surfaces and geometry. 
-Take a look at ```utils/CS123SceneData.h```. In this file, you will find all the data structures you need to build a scene. This section will go over the conceptual aspects of the scene elements.
+### 1.2. Scene Data vrs. Render Data
+
+To visualize a compelling 3d scene, we need data about the lights, camera and primitives (which themselves include textures, surfaces and geometry).  Yet, as you have probably seen in computer science, we can store data in more or less effective ways depending on our use!
+
+In this case, when **building a scene**, we will use a **transformation graph** to make it easy to change and keep track of the position and orientation of primitives. We can think of this as a "ideal" representation of our scene, so we decided to call it simply ```SceneData```.
+
+However, when **rendering a scene**, we need the **final transformation matrices** to quickly get the final position and orientation of the primitives. These matricies are also known as cummulative transformation matricies, or ```ctm``` for short, and are stored directly **with the primitives in a list**. We can think of this as a "render-optimized" representation of our scene, so we called it ```RenderData```.
+
+See the drawing below. Don't worry if you don't understand all the elements, they will be covered in this lab!
+
+
+
+Your goal is to tranform ```SceneData``` to ```RenderData```.
+<details>
+  <summary>Advanced: Why do we choose to render primitives from a List?</summary>
+If you have started Ray 1, you might have noticed that one of the reasons Ray Tracing is so computationally expensive is because we need to check ray-primitive intersections, particularly when there are many primitives in the scene to check! 
+
+Using a list to iterate through the primitives is a simple way of doing this and sufficient for the requirements of this course, but there isn't any reason this part of the ```RenderData``` __has__ to be a simple list. If you want to be fancy, there are more efficient ways of doing it (see accelerated data structures) [add link, details].
+</details>
+
+We have stored these for you in a nice series of structs.
+Take a look at ```parser/SceneData.h```. In this file, you will find all the data structures you need to build a scene. This section will go over the conceptual aspects of the scene elements.
+
+## 2. Understanding Scene Data
 
 ### 2.1. Global Data
-First, take a look at ```lines 16 - 22``` in ```CS123SceneData.h```:
+First, take a look at ```lines 16 - 22``` in ```SceneData.h```:
 ```cpp
 struct CS123SceneGlobalData  {
    // Scene global color coefficients
@@ -124,7 +146,9 @@ The material field describes all the important information about what the primit
 
 Notice that unlike the lights or camera structs, there aren't any fields in ```CS123ScenePrimitive``` that describe position or orientation. This is because it is more practical to use **transformation graphs** to manage this, especially when we have a lot of primitives!
 
-### 2.5. Transformations
+## 3. Transformation Graphs
+
+### 3.1. Transformations
 
 On ```lines 141 - 143``` you will find the ```TransformationType```.
 
@@ -155,7 +179,7 @@ struct CS123SceneTransformation {
 };
 ```
 
-### 2.6. Transformation Graphs
+### 3.2. Transformation Graphs
 
 Scenes often have tens or hundrends of primitives, each with multiple different transformations! When creating a scene, it means that we'd have to know the exact final position and orientation of every primitive. When rendering, storing the transformations for each one can be particularly inefficient, especially when often **a single transformation is repeated on many different objects**.  
 
@@ -185,7 +209,7 @@ Moving a house to a different position would be as simple as applying a transfor
 In our city, we can define a first grouping as the streets, which can themselves be made up of sub-groupings consisting of buildings, which can be made of further sub-groupings of windows, doors and roofs, until we get to the primitives like cubes, pyramids, and cylinders. 
 </details> </br>
 
-### 2.6.1. A Simple Transformation Graph
+### 3.2.1. A Simple Transformation Graph
 
 In these two subsections, you will learn how to use **transformation graphs** to build final transformation matrices for each primitive.
 
@@ -203,7 +227,7 @@ Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```
 |  Write the final transformation matrix for the Cube, Cone and Cylinder. <br/> <br/> <ul> <li> A final transformation matrix is a matrix that transforms a primitive to its final position and orientation in the scene. </li> <li>Your answer should be a product of matrices ```M1```, ```M2```, etc. </li> <li>Keep in mind that order matters when multiplying matricies! </li> </ul>|
 
 
-### 2.6.2. A More Complex Transformation Graph
+### 3.2.2. A More Complex Transformation Graph
 Now, consider the graph below:
  
 ![Scene Graph Image](img/Parsing_Lab_City_Graph_v5.jpg)
@@ -232,47 +256,47 @@ In the previous exercise, you should have noticed that the same transformations 
 | Consider how you might build the final transformation matricies from a scene graph using depth first search. Explain how your approach is better in terms of time complexity, and write pseudocode for it. |
 
 
-## 3. Implementing a Scene Parser
+## 4. Creating Render Data
 
 By now, you should know all about how we represent global, light, camera, primitive and transformation data.
 
 You will also implement a depth first search to generate the final transformation matrices for each primitive. To do this, you will be filling in out a struct called CS123SceneMetaData in `CS123SceneLoader::load`, based off of data found in the scene provided by a SceneData struct (SceneData.h).
 
-### 3.1. Understanding SceneData.h
+### 4.1. Understanding SceneData.h
 
 Throughout this course, we will use a CSCI1230-specific scene file format to describe a scene. Our scene file contains necessary information of a scene, namely global data, camera data, light data, and object data. You should refer to this document to understand scene files and scene graphs in detail.
 
-### 3.2. Implementing CS123SceneLoader::load()
+### 4.2. Implementing CS123SceneLoader::load()
   **Explain the sencil structure, what files do the parsing, what functions to fill in.**
   Behind the scenes, we have parsed out all this data nicely and you can find it in SceneData.h
   
-### 3.2.1 Global data Camera Data
+### 4.2.1 Global data Camera Data
   In load(), you will need 
   These are found in the parser member variables.
   
-### 3.2.2 Lights
+### 4.2.2 Lights
   Array of structs
 
-### 3.2.3 Read the matrix of the root
+### 4.2.3 Read the matrix of the root
   Call fsParseSceneNode() in load().
   Check that you are correctly printing out the transformation matrix. **Print out the matrix & provide it so they can check**
   In order to make a matrix from a vec::3, you will need to call GLM::rotate, translate, scale. For rotate in particular, look at SceneData.h angle, and rotate.
   
-### 3.2.3 Depth-first search recusively 
+### 4.2.3 Depth-first search recusively 
 Whenever we would like to load a scene, we can call `CS123SceneLoader::load`. Since this is a class method, there is no need to create any new `CS123SceneLoader` instance. 
 
 The stencil code already covers the parsing for the XML scene file and what you should do is to create the scene meta-data based on the information inside the parser. In the load function, a new parser instance will be created and try to parse the given file. Upon success, all information will be available via the `CS123ISceneParser` interface.
 
 In `CS123SceneLoader::load`, you should obtain the global data for the scene, the camera data and the lighting. You should also traverse through the primitive tree and calculate the cumulative transformation matrix for each of them. All data described above can be packed into a `CS123SceneMetaData` structure as a unified interface for you to create your own scene for your future assignments.
 
-### 3.3 Testing scenes
+### 4.3 Testing scenes
   You should have a completed parser that can load all of the scene files. Be prepared to load the things in increasing complexing.
   You can run
   It will print to console but also show you a visual
   
   
-## 4. Checkoff
-To be checked off, you shoudl have your answers to conceptual questions ready (Tasks 1 through 3).
+## 5. Checkoff
+To be checked off, you should have your answers to conceptual questions ready (Tasks 1 through 3).
 You should also be able to print out the correct matrices and show a visual of the scene.
   
 ## 6. (Optional) Creating your own 3-d scenes
