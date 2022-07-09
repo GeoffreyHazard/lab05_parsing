@@ -14,12 +14,12 @@ In this case, when **building a scene**, we will use a **transformation graph** 
 
 However, when **rendering a scene**, we need the **final transformation matrices** to quickly get the final position and orientation of the primitives. These matricies are also known as cummulative transformation matricies, or ```ctm``` for short, and are stored directly **with the primitives in a list**. We can think of this as a "render-optimized" representation of our scene, so we called it ```RenderData```.
 
-See the drawing below. Don't worry if you don't understand all the elements, they will be covered in this lab!
+See the drawing below. Your goal is to tranform ```SceneData``` to ```RenderData```. Don't worry if you don't understand all the elements, they'll be covered in this lab!
 
 
 ![Render vrs Scene](img/SceneVrsRender.png)
 
-Your goal is to tranform ```SceneData``` to ```RenderData```.
+
 <details>
   <summary>Advanced: Why do we choose to render primitives from a List?</summary>
 If you have started Ray 1, you might have noticed that one of the reasons Ray Tracing is so computationally expensive is because we need to check ray-primitive intersections, particularly when there are many primitives in the scene to check! 
