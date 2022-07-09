@@ -3,7 +3,7 @@
  */
 
 #include "scenefilereader.h"
-#include "scenedefinition.h"
+#include "SceneData.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"

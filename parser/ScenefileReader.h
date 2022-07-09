@@ -1,7 +1,7 @@
 #ifndef __ScenefileReader__
 #define __ScenefileReader__
 
-#include "scenedefinition.h"
+#include "SceneData.h"
 
 #include <vector>
 #include <map>

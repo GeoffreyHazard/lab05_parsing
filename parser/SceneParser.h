@@ -1,7 +1,7 @@
 #ifndef SCENEPARSER_H
 #define SCENEPARSER_H
 
-#include "scenedefinition.h"
+#include "SceneData.h"
 #include <vector>
 #include <string>
 
