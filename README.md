@@ -14,11 +14,12 @@ In this case, when **building a scene**, we will use a **transformation graph** 
 
 However, when **rendering a scene**, we need the **final transformation matrices** to quickly get the final position and orientation of the primitives. These matricies are also known as cummulative transformation matricies, or ```ctm``` for short, and are stored directly **with the primitives in a list**. We can think of this as a "render-optimized" representation of our scene, so we called it ```RenderData```.
 
-See the drawing below. Don't worry if you don't understand all the elements, they will be covered in this lab!
+See the drawing below. Your goal is to tranform ```SceneData``` to ```RenderData```. Don't worry if you don't understand all the elements, they'll be covered in this lab!
 
 
+![Render vrs Scene](img/SceneVrsRender.png)
 
-Your goal is to tranform ```SceneData``` to ```RenderData```.
+
 <details>
   <summary>Advanced: Why do we choose to render primitives from a List?</summary>
 If you have started Ray 1, you might have noticed that one of the reasons Ray Tracing is so computationally expensive is because we need to check ray-primitive intersections, particularly when there are many primitives in the scene to check! 
@@ -217,7 +218,7 @@ _Aside: A final transformation matrix is also called a **cumulative transformati
 
 Consider the graph below that represents four primitives in a scene (two spheres, one cube, one cone and a cylinder):
 
-![Scene Graph Image](img/Parsing_Lab_Simple_Graph.jpg)
+![Scene Graph Image](img/Parsing_Lab_Simple_Graph-2.png)
 
 Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```M2```, etc.) are represented on the branches of the graph, and are applied to every child node. All nodes that are not leaf nodes are ```CS123SceneNode```s (also called **transblocks**) and can be thought of as groupings of objects as mentioned in **2.6**.
 
@@ -230,7 +231,7 @@ Primitives are always leaf nodes. Transformation matrices (denoted ```M1```, ```
 ### 3.2.2. A More Complex Transformation Graph
 Now, consider the graph below:
  
-![Scene Graph Image](img/Parsing_Lab_City_Graph_v5.jpg)
+![Scene Graph Image](img/Parsing_Lab_City_Graph_v6.png)
 Instead of transformation matricies ```M1```, ```M2```, etc. we have individual transformations such as Scaling, Translation and Rotation. These are written in the form ```S```, ```T``` and ```R``` followed by the parameters needed for each transformation. For example ```S(15,.1,1)``` scales by ```15``` in the x direction, by ```.1``` in the y direction and by ```1``` in the z direction. Note that Rotations have four parameters, like ```R(x, y, z, angle)```. The first three parameters describe the axis of rotation in terms of ```x```, ```y``` and ```z``` axes, and the last parameter is the angle of rotation in degrees.
 
 Like before, only the leaves of this tree contain any real geometry in the form of primitives (cube, sphere, etc). 
