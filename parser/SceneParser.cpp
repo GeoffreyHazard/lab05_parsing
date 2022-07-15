@@ -1,4 +1,4 @@
-#include "sceneparser.h"
+#include "SceneParser.h"
 #include "scenefilereader.h"
 #include "glm/gtx/transform.hpp"
 
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-bool SceneParser::parse(std::string filepath, SceneMetaData &oMetaData) {
+bool SceneParser::parse(std::string filepath, RenderData &renderData) {
     shared_ptr<ScenefileReader> fileReader = make_shared<ScenefileReader>(filepath);
     bool success = fileReader->parseXML();
     if (!success) {
@@ -18,19 +18,19 @@ bool SceneParser::parse(std::string filepath, SceneMetaData &oMetaData) {
     /* TA SOLUTION BEGIN */
 
     // load the scene with the data in the parser
-    oMetaData.lights.clear();
-    oMetaData.shapes.clear();
+    renderData.lights.clear();
+    renderData.shapes.clear();
 
-    fileReader->getCameraData(oMetaData.cameraData);
-    fileReader->getGlobalData(oMetaData.globalData);
+    fileReader->getCameraData(renderData.cameraData);
+    fileReader->getGlobalData(renderData.globalData);
 
     int numLights = fileReader->getNumLights();
-    oMetaData.lights.reserve(numLights);
+    renderData.lights.reserve(numLights);
 
     for (int i = 0; i < numLights; i++) {
         SceneLightData lightData;
         fileReader->getLightData(i, lightData);
-        oMetaData.lights.emplace_back(lightData);
+        renderData.lights.emplace_back(lightData);
     }
 
     SceneNode *root = fileReader->getRootNode();
@@ -39,7 +39,7 @@ bool SceneParser::parse(std::string filepath, SceneMetaData &oMetaData) {
     auto startTS = std::chrono::system_clock::now();
     std::cout << std::endl << "Begin loading scene " << filepath << std::endl;
 
-    dfsParseSceneNode(oMetaData, root, matrix);
+    dfsParseSceneNode(renderData, root, matrix);
 
     auto endTS = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = endTS - startTS;
@@ -52,7 +52,7 @@ bool SceneParser::parse(std::string filepath, SceneMetaData &oMetaData) {
 
 /* TA SOLUTION BEGIN */
 
-void SceneParser::dfsParseSceneNode(SceneMetaData &oMetaData, SceneNode *node, glm::mat4 matrix) {
+void SceneParser::dfsParseSceneNode(RenderData &renderData, SceneNode *node, glm::mat4 matrix) {
     if (node == nullptr) {
         return;
     }
@@ -88,11 +88,11 @@ void SceneParser::dfsParseSceneNode(SceneMetaData &oMetaData, SceneNode *node, g
 
     for (auto primitive : node->primitives) {
         SceneShapeData shape = {.primitive = *primitive, .ctm = matrix};
-        oMetaData.shapes.emplace_back(shape);
+        renderData.shapes.emplace_back(shape);
     }
 
     for (SceneNode * child : node->children) {
-        dfsParseSceneNode(oMetaData, child, matrix);
+        dfsParseSceneNode(renderData, child, matrix);
     }
     return;
 }

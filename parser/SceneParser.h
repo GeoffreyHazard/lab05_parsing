@@ -12,7 +12,7 @@ struct SceneShapeData {
     glm::mat4 ctm;
 };
 
-struct SceneMetaData {
+struct RenderData {
     SceneGlobalData globalData;
     SceneCameraData cameraData;
 
@@ -27,11 +27,11 @@ public:
     // @param filepath The path of the scene file to load.
     // @param oMetaData On return, this will contain the metadata of the loaded scene.
     // @return A boolean value indicating whether the load is successful.
-    static bool parse(std::string filepath, SceneMetaData &oMetaData);
+    static bool parse(std::string filepath, RenderData &oMetaData);
 
     /* TA SOLUTION BEGIN */
 private:
-    static void dfsParseSceneNode(SceneMetaData &oMetaData, SceneNode *node, glm::mat4 matrix);
+    static void dfsParseSceneNode(RenderData &oMetaData, SceneNode *node, glm::mat4 matrix);
 
     /* TA SOLUTION END */
 };
