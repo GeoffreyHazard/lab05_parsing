@@ -12,20 +12,20 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    ui/glwidget.cpp \
-    ui/mainwindow.cpp \
-    parser/sceneparser.cpp \
-    parser/scenefilereader.cpp
+    ui/GLWidget.cpp \
+    ui/MainWindow.cpp \
+    parser/SceneParser.cpp \
+    parser/ScenefileReader.cpp
 
 HEADERS += \
-    ui/glwidget.h \
-    ui/mainwindow.h \
-    parser/scenedefinition.h \
-    parser/sceneparser.h \
-    parser/scenefilereader.h
+    ui/GLWidget.h \
+    ui/MainWindow.h \
+    parser/SceneData.h \
+    parser/SceneParser.h \
+    parser/ScenefileReader.h
 
 FORMS += \
-    ui/mainwindow.ui
+    ui/MainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
