@@ -32,14 +32,14 @@ void MainWindow::fileOpen() {
         return;
     }
 
-    SceneMetaData metaData;
-    bool success = SceneParser::parse(file.toStdString(), metaData);
+    RenderData renderData;
+    bool success = SceneParser::parse(file.toStdString(), renderData);
     if (!success) {
         QMessageBox::critical(this, "Error", "Parse XML fail");
         return;
     }
 
     // load the scene
-    ui->glwidget->loadScene(metaData);
+    ui->glwidget->loadScene(renderData);
 }
 

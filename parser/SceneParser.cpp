@@ -87,7 +87,7 @@ void SceneParser::dfsParseSceneNode(RenderData &renderData, SceneNode *node, glm
     }
 
     for (auto primitive : node->primitives) {
-        SceneShapeData shape = {.primitive = *primitive, .ctm = matrix};
+        RenderShapeData shape = {.primitive = *primitive, .ctm = matrix};
         renderData.shapes.emplace_back(shape);
     }
 

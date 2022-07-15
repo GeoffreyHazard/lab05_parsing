@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-struct SceneShapeData {
+struct RenderShapeData {
     // The primitive description structure
     ScenePrimitive primitive;
     // The cumulative transformation matrix
@@ -17,7 +17,7 @@ struct RenderData {
     SceneCameraData cameraData;
 
     std::vector<SceneLightData> lights;
-    std::vector<SceneShapeData> shapes;
+    std::vector<RenderShapeData> shapes;
 };
 
 class SceneParser

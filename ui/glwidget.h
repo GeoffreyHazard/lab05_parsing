@@ -3,7 +3,7 @@
 
 #include <QOpenGLWidget>
 
-struct SceneMetaData;
+struct RenderData;
 
 
 class GLWidget : public QOpenGLWidget
@@ -11,7 +11,7 @@ class GLWidget : public QOpenGLWidget
 public:
     GLWidget(QWidget *parent) : QOpenGLWidget(parent) { }
 
-    void loadScene(const SceneMetaData &metaData);
+    void loadScene(const RenderData &renderData);
 
 protected:
     void initializeGL() override;

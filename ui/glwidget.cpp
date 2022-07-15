@@ -21,7 +21,7 @@ void GLWidget::paintGL() {
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void GLWidget::loadScene(const SceneMetaData &metaData) {
+void GLWidget::loadScene(const RenderData &renderData) {
     // TODO: The magic happens here lol
     std::cout << "GLWidget [loadScene] begin" << std::endl;
 
