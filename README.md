@@ -2,15 +2,16 @@
 
 ## 1. Introduction
 
-In this lab, you will learn how to work with ```SceneData``` to load all the information you need to render a 3d scene. Notably, you will learn how lights, cameras and primitives are represented, as well as how to read **transformation graphs** so that every object has the correct final size and position. 
+In this lab, you will learn how to work with ```SceneData``` to represent a 3d scene. You will then write code that turns ```SceneData``` into ```RenderData```, a format that makes it easier to render an image from your scene. You will learn how lights, cameras and primitives are represented, as well as how to read **transformation graphs** so that every object has the correct final size and position in the scene. 
 
 __You will need the code you’ve written in this lab for the upcoming assignments, including the Ray and Realtime projects!__
 
 ### 1.2. Scene Data vrs. Render Data
 
-To visualize a compelling 3d scene, we need data about the lights, camera and primitives (which themselves include textures, surfaces and geometry).  Yet, as you have probably seen in computer science, we can store data in more or less effective ways depending on our use!
+To visualize a compelling 3d scene, we need data about the lights, camera and primitives (which themselves include textures, surfaces and geometry).  Yet, as you have probably seen in computer science, we can store data in more or less effective ways depending on our intended use!
 
-In this case, when **building a scene**, we will use a **transformation graph** to make it easy to change and keep track of the position and orientation of primitives. We can think of this as a "ideal" representation of our scene, so we decided to call it simply ```SceneData```.
+In this case, when **building a scene**, we will use a **transformation graph** to make it easy to keep track of (and change) the position and orientation of primitives. Because the transformation graph organizes our scene in a way that reflects how the objects are built together, we can think of this as a "ideal" representation of our scene, so we decided to call it simply ```SceneData```.
+
 
 However, when **rendering a scene**, we need the **final transformation matrices** to quickly get the final position and orientation of the primitives. These matricies are also known as cummulative transformation matricies, or ```ctm``` for short, and are stored directly **with the primitives in a list**. We can think of this as a "render-optimized" representation of our scene, so we called it ```RenderData```.
 
