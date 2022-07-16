@@ -1,7 +1,7 @@
-#include "glwidget.h"
+#include "GLWidget.h"
 #include <iostream>
 #include <QOpenGLFunctions>
-#include "parser/sceneparser.h"
+#include "parser/SceneParser.h"
 
 
 void GLWidget::initializeGL() {

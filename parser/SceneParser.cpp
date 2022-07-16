@@ -1,5 +1,5 @@
 #include "SceneParser.h"
-#include "scenefilereader.h"
+#include "ScenefileReader.h"
 #include "glm/gtx/transform.hpp"
 
 #include <chrono>
@@ -10,7 +10,7 @@ using namespace std;
 
 bool SceneParser::parse(std::string filepath, RenderData &renderData) {
     shared_ptr<ScenefileReader> fileReader = make_shared<ScenefileReader>(filepath);
-    bool success = fileReader->parseXML();
+    bool success = fileReader->readXML();
     if (!success) {
         return false;
     }

@@ -1,8 +1,8 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
 
-#include "glwidget.h"
-#include "parser/sceneparser.h"
+#include "GLWidget.h"
+#include "parser/SceneParser.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

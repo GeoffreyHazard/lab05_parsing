@@ -1,8 +1,8 @@
-/*
+ /*
  * CS123 New Parser for XML
  */
 
-#include "scenefilereader.h"
+#include "ScenefileReader.h"
 #include "SceneData.h"
 
 #include "glm/glm.hpp"
@@ -57,27 +57,27 @@ ScenefileReader::~ScenefileReader()
     m_objects.clear();
 }
 
-bool ScenefileReader::getGlobalData(SceneGlobalData& data) const {
+void ScenefileReader::getGlobalData(SceneGlobalData& data) const {
     data = m_globalData;
-    return true;
+    return;
 }
 
-bool ScenefileReader::getCameraData(SceneCameraData& data) const {
+void ScenefileReader::getCameraData(SceneCameraData& data) const {
     data = m_cameraData;
-    return true;
+    return;
 }
 
 int ScenefileReader::getNumLights() const {
     return m_lights.size();
 }
 
-bool ScenefileReader::getLightData(int i, SceneLightData& data) const {
+void ScenefileReader::getLightData(int i, SceneLightData& data) const {
     if (i < 0 || (unsigned int)i >= m_lights.size()) {
         std::cout << "invalid light index %d" << std::endl;
-        return false;
+        throw std::invalid_argument("index out of range");
     }
     data = *m_lights[i];
-    return true;
+    return;
 }
 
 SceneNode* ScenefileReader::getRootNode() const {
@@ -88,7 +88,7 @@ SceneNode* ScenefileReader::getRootNode() const {
 }
 
 // This is where it all goes down...
-bool ScenefileReader::parseXML() {
+bool ScenefileReader::readXML() {
     // Read the file
     QFile file(file_name.c_str());
     if (!file.open(QFile::ReadOnly)) {
