@@ -14,15 +14,15 @@ auto DFSTraversal(auto& Shapes, auto&& ParentTransformation, auto Node)->void {
     auto FusedTransformation = ParentTransformation;
     for (auto x : Node->transformations)
         FusedTransformation *= [&] {
-        if (x->type == TRANSFORMATION_TRANSLATE)
-            return glm::translate(x->translate);
-        else if (x->type == TRANSFORMATION_SCALE)
-            return glm::scale(x->scale);
-        else if (x->type == TRANSFORMATION_ROTATE)
-            return glm::rotate(x->angle, x->rotate);
-        else if (x->type == TRANSFORMATION_MATRIX)
-            return x->matrix;
-        throw std::runtime_error{ "?????"};
+            if (x->type == TRANSFORMATION_TRANSLATE)
+                return glm::translate(x->translate);
+            else if (x->type == TRANSFORMATION_SCALE)
+                return glm::scale(x->scale);
+            else if (x->type == TRANSFORMATION_ROTATE)
+                return glm::rotate(x->angle, x->rotate);
+            else if (x->type == TRANSFORMATION_MATRIX)
+                return x->matrix;
+            throw std::runtime_error{ "?????"};
     }();
 
     for (auto x : Node->primitives)
