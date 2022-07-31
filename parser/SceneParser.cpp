@@ -23,7 +23,7 @@ auto DFSTraversal(auto& Shapes, auto&& ParentTransformation, auto Node)->void {
             else if (x->type == TRANSFORMATION_MATRIX)
                 return x->matrix;
             throw std::runtime_error{ "?????"};
-    }();
+        }();
 
     for (auto x : Node->primitives)
         Shapes.push_back({ .primitive = *x, .ctm = FusedTransformation });
