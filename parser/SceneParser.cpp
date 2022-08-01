@@ -9,8 +9,8 @@
 using namespace std;
 
 bool SceneParser::parse(std::string filepath, RenderData &renderData) {
-    shared_ptr<ScenefileReader> fileReader = make_shared<ScenefileReader>(filepath);
-    bool success = fileReader->readXML();
+    ScenefileReader fileReader = ScenefileReader(filepath);
+    bool success = fileReader.readXML();
     if (!success) {
         return false;
     }
@@ -21,19 +21,19 @@ bool SceneParser::parse(std::string filepath, RenderData &renderData) {
     renderData.lights.clear();
     renderData.shapes.clear();
 
-    fileReader->getCameraData(renderData.cameraData);
-    fileReader->getGlobalData(renderData.globalData);
+    renderData.cameraData = fileReader.getCameraData();
+    renderData.globalData = fileReader.getGlobalData();
 
-    int numLights = fileReader->getNumLights();
+    int numLights = fileReader.getNumLights();
     renderData.lights.reserve(numLights);
 
     for (int i = 0; i < numLights; i++) {
         SceneLightData lightData;
-        fileReader->getLightData(i, lightData);
+        fileReader.getLightData(i, lightData);
         renderData.lights.emplace_back(lightData);
     }
 
-    SceneNode *root = fileReader->getRootNode();
+    SceneNode *root = fileReader.getRootNode();
     glm::mat4 matrix(1.0f);
 
     auto startTS = std::chrono::system_clock::now();
@@ -52,7 +52,7 @@ bool SceneParser::parse(std::string filepath, RenderData &renderData) {
 
 /* TA SOLUTION BEGIN */
 
-void SceneParser::dfsParseSceneNode(RenderData &renderData, SceneNode *node, glm::mat4 matrix) {
+void SceneParser::dfsParseSceneNode(RenderData &renderData, SceneNode * node, glm::mat4 matrix) {
     if (node == nullptr) {
         return;
     }
@@ -91,7 +91,7 @@ void SceneParser::dfsParseSceneNode(RenderData &renderData, SceneNode *node, glm
         renderData.shapes.emplace_back(shape);
     }
 
-    for (SceneNode * child : node->children) {
+    for (SceneNode  * child : node->children) {
         dfsParseSceneNode(renderData, child, matrix);
     }
     return;

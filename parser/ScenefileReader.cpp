@@ -40,12 +40,6 @@ ScenefileReader::~ScenefileReader()
 
     // Delete all Scene Nodes
     for (unsigned int node = 0; node < m_nodes.size(); node++) {
-        for (size_t i = 0; i < (m_nodes[node])->transformations.size(); i++) {
-            delete (m_nodes[node])->transformations[i];
-        }
-        for (size_t i = 0; i < (m_nodes[node])->primitives.size(); i++) {
-            delete (m_nodes[node])->primitives[i];
-        }
         (m_nodes[node])->transformations.clear();
         (m_nodes[node])->primitives.clear();
         (m_nodes[node])->children.clear();
@@ -57,14 +51,12 @@ ScenefileReader::~ScenefileReader()
     m_objects.clear();
 }
 
-void ScenefileReader::getGlobalData(SceneGlobalData& data) const {
-    data = m_globalData;
-    return;
+SceneGlobalData& ScenefileReader::getGlobalData() {
+    return m_globalData;
 }
 
-void ScenefileReader::getCameraData(SceneCameraData& data) const {
-    data = m_cameraData;
-    return;
+SceneCameraData& ScenefileReader::getCameraData() {
+    return m_cameraData;
 }
 
 int ScenefileReader::getNumLights() const {

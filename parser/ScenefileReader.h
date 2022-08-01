@@ -29,9 +29,9 @@ public:
     // Parse the XML scene file. Returns false if scene is invalid.
     bool readXML();
 
-    void getGlobalData(SceneGlobalData& data) const;
+    SceneGlobalData& getGlobalData();
 
-    void getCameraData(SceneCameraData& data) const;
+    SceneCameraData& getCameraData();
 
     int getNumLights() const;
 
