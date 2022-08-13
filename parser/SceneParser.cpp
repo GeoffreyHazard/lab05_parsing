@@ -23,27 +23,19 @@ bool SceneParser::parse(std::string filepath, RenderData &renderData) {
 
     renderData.cameraData = fileReader.getCameraData();
     renderData.globalData = fileReader.getGlobalData();
-
-    int numLights = fileReader.getNumLights();
-    renderData.lights.reserve(numLights);
-
-    for (int i = 0; i < numLights; i++) {
-        SceneLightData lightData;
-        fileReader.getLightData(i, lightData);
-        renderData.lights.emplace_back(lightData);
-    }
+    renderData.lights = fileReader.getLights();
 
     SceneNode *root = fileReader.getRootNode();
     glm::mat4 matrix(1.0f);
 
     auto startTS = std::chrono::system_clock::now();
-    std::cout << std::endl << "Begin loading scene " << filepath << std::endl;
+    std::cout << std::endl << "Begin parsing scene " << filepath << std::endl;
 
     dfsParseSceneNode(renderData, root, matrix);
 
     auto endTS = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = endTS - startTS;
-    std::cout << "Complete loading scene. Time elapse: " << elapsed_seconds.count() * 1000.f << "ms" << std::endl;
+    std::cout << "Complete parsing scene. Time elapse: " << elapsed_seconds.count() * 1000.f << "ms" << std::endl;
 
     /* TA SOLUTION END */
 

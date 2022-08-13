@@ -40,6 +40,12 @@ ScenefileReader::~ScenefileReader()
 
     // Delete all Scene Nodes
     for (unsigned int node = 0; node < m_nodes.size(); node++) {
+        for (size_t i = 0; i < (m_nodes[node])->transformations.size(); i++) {
+            delete (m_nodes[node])->transformations[i];
+        }
+        for (size_t i = 0; i < (m_nodes[node])->primitives.size(); i++) {
+            delete (m_nodes[node])->primitives[i];
+        }
         (m_nodes[node])->transformations.clear();
         (m_nodes[node])->primitives.clear();
         (m_nodes[node])->children.clear();
@@ -51,25 +57,22 @@ ScenefileReader::~ScenefileReader()
     m_objects.clear();
 }
 
-SceneGlobalData& ScenefileReader::getGlobalData() {
+SceneGlobalData ScenefileReader::getGlobalData() const {
     return m_globalData;
 }
 
-SceneCameraData& ScenefileReader::getCameraData() {
+SceneCameraData ScenefileReader::getCameraData() const {
     return m_cameraData;
 }
 
-int ScenefileReader::getNumLights() const {
-    return m_lights.size();
-}
+std::vector<SceneLightData> ScenefileReader::getLights() const {
+    std::vector<SceneLightData> ret{};
+    ret.reserve(m_lights.size());
 
-void ScenefileReader::getLightData(int i, SceneLightData& data) const {
-    if (i < 0 || (unsigned int)i >= m_lights.size()) {
-        std::cout << "invalid light index %d" << std::endl;
-        throw std::invalid_argument("index out of range");
+    for (auto light : m_lights) {
+        ret.emplace_back(*light);
     }
-    data = *m_lights[i];
-    return;
+    return ret;
 }
 
 SceneNode* ScenefileReader::getRootNode() const {
@@ -141,7 +144,7 @@ bool ScenefileReader::readXML() {
         childNode = childNode.nextSibling();
     }
 
-    std::cout << "finished parsing " << file_name << std::endl;
+    std::cout << "Finished reading " << file_name << std::endl;
     return true;
 }
 

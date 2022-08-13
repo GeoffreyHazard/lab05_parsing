@@ -29,14 +29,11 @@ public:
     // Parse the XML scene file. Returns false if scene is invalid.
     bool readXML();
 
-    SceneGlobalData& getGlobalData();
+    SceneGlobalData getGlobalData() const;
 
-    SceneCameraData& getCameraData();
+    SceneCameraData getCameraData() const;
 
-    int getNumLights() const;
-
-    // Returns the ith light data
-    void getLightData(int i, SceneLightData& data) const;
+    std::vector<SceneLightData> getLights() const;
 
     SceneNode* getRootNode() const;
 
