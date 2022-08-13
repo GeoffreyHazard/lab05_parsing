@@ -3,6 +3,8 @@
 #include <QOpenGLFunctions>
 #include <glm/gtc/matrix_transform.hpp>
 
+// Students: ignore this file
+
 using namespace std;
 
 static const int CubeVertexNum = 216;
